@@ -1,4 +1,4 @@
-package com.ivan.creator.singleton;
+package com.ivan.creational.singleton;
 
 public class Singleton3 {
 
