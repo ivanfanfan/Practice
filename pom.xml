@@ -9,7 +9,7 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>datastruct-algorithms</module>
+        <module>datastructure-algorithms</module>
         <module>design-pattern</module>
         <module>current-programming</module>
     </modules>

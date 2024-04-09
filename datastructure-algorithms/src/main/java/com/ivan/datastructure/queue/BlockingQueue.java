@@ -4,6 +4,7 @@ package com.ivan.datastructure.queue;
 import java.util.LinkedList;
 import java.util.List;
 
+//TODO block queue
 public class BlockingQueue {
 
 //    final Object[] items;
