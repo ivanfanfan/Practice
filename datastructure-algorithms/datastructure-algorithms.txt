@@ -49,4 +49,52 @@
     先序：父左右
     中序：左父右
     后序：左右父
+6.1 二叉搜索树 BinarySearchTree
+
+前驱节点：
+    有左子树，左子树的最大值。
+    无左子树，离他最近自左而来的祖先节点。parent.right
+后继节点：
+    有右子树，右子树的最小值。
+    无右子树，离他最近自右而来的祖先节点。 parent.left
+删除节点：
+    删除节点没有左孩子，将右孩子托孤给被删节点的父节点(parent)
+    删除节点没有右孩子，将左孩子托孤给被删节点的父节点(parent)
+    删除节点左右孩子都没有，已经涵盖在情况1，情况2当中，把null托孤给parent
+    删除节点左右孩子都有，可以将它的后继节点(称为S)托孤(shift)给被删节点的父节点(Parent)，再将此后继节点的父亲节点(称为SP)，又分为两种情况
+        1. SP就是要被删除的节点，此时被删除节点(deleted)和后继结点(S)相邻。只需要将S托孤(shift)给被删节点的父节点(parent)。
+        2. SP不是要被删除的节点，此时被删除节点(deleted)和后继结点(S)不相邻。此时需要将(S)的后代托孤(shift)给后继结点的父节点(SP)，再将后继结点(S)托孤给被删节点的父节点(Parent)。
+
+6.2 二叉平衡树 AVLTree
+
+方法：
+判断节点是否平衡：如果一个节点的左右孩子高度差超过1，则此节点失衡，需要进行旋转。
+节点对象：AvlNode{
+    key,value,right, left, height = 1,
+}
+节点的高度更新：    max(leftHeight, rightHeight) + 1
+平衡因子(balance factor) = leftHeight - rightHeight
+     < -1   >1 失衡
+     0  1  -1 平衡
+失衡情况：
+   失衡节点：失衡节点子节点
+    LL：右旋一次  bf(node) > 1 && bf(node.left) >=0
+    LR：子树左转，树右旋 bf(node) >1 && bf(node.left) < 0
+    RR：左旋一次  bf(node) < -1 && bf(node.right) <=0
+    RL
+
+    节点的高度
+    更新高度
+    平衡因子 balance factor
+
+
+
+
+
+
+
+
+
+
+
 
