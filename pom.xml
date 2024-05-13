@@ -12,6 +12,7 @@
         <module>datastructure-algorithms</module>
         <module>design-pattern</module>
         <module>current-programming</module>
+        <module>java-io</module>
     </modules>
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
