@@ -87,6 +87,65 @@
     更新高度
     平衡因子 balance factor
 
+Heap
+1. Types of heaps
+    1. max
+    2. min
+2. heap Operations
+    insert: adds a new element to the heap while maintaining the heap property.
+    extract max/min: removes the maximum or minimum element from the heap and return it.
+    heapify
+3. applications
+    1. heaps are commonly used to implement priority queues, where elements are retrieved based on their priority
+    2. heapsort
+    3. Dijkstra's algorithm and Prim's algorithm for finding the shortest paths and minimum spanning trees.
+4.Basic of head data structure.
+    1. properties of heap:
+        complement binary tree: A heap tree is a complete binary tree, meaning all levels of tree are fully filled except possibly the last level,
+            which is filled from left to right.
+        heap Property: the minimum or maximum element is always at the root.
+        Parent-Child relationship: The relationship between a parent node at index 'i' and its children is given by the formulas: left child at index
+            2i+1 and right child at index 2i+2 for 0-based indexing of node number;
+        Efficient insertion and removal: new elements are inserted at the next available position in the bottom-rightmost level, and the heap property
+            is restored by comparing the element with its parent and swapping if necessary.
+        Efficient Access to extremal elements
+5. Operations Supported by heap
+    1. heapify: It is the process to rearrange the elements to maintain the property of heap data structure.
+            It is done when a certain node creates an imbalance in the heap due to some operations on that node. It takes O(logN) to balance the tree.
+    2. Insertion: if we insert a new element into the heap since we are adding a new element into the heap so it will distort the properties of the heap
+            so we need to perform the heapify operation so that it maintains the property of the heap.
+            This operation also takes O(logN) time.
+    3. getMax (for max-heap) or getMin(for min-heap)
+    4. removeMin or removeMax
+            delete the root element of the heap binary tree.
+
+
+
+tree
+1. Type
+    1. Binary tree
+        1. full binary tree
+        2. complete binary tree
+        3. balanced binary tree
+        4. degenerate or pathological binary tree.
+    2. ternary tree
+    3. N-ary tree or generic tree
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
