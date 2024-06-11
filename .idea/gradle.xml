@@ -4,10 +4,26 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
-        <option name="externalProjectPath" value="$PROJECT_DIR$/spring-framework-6.18" />
-        <option name="gradleHome" value="D:/devSoft/gradle-7.4" />
+        <compositeConfiguration>
+          <compositeBuild compositeDefinitionSource="SCRIPT">
+            <builds>
+              <build path="$PROJECT_DIR$/build-logic" name="build-logic">
+                <projects>
+                  <project path="$PROJECT_DIR$/build-logic" />
+                </projects>
+              </build>
+            </builds>
+          </compositeBuild>
+        </compositeConfiguration>
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/build-logic" />
+            <option value="$PROJECT_DIR$/current-programming" />
+            <option value="$PROJECT_DIR$/datastructure-algorithms" />
+            <option value="$PROJECT_DIR$/design-pattern" />
+            <option value="$PROJECT_DIR$/java-io" />
             <option value="$PROJECT_DIR$/spring-framework-6.18" />
           </set>
         </option>
