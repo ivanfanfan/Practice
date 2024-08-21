@@ -15,7 +15,9 @@
             </builds>
           </compositeBuild>
         </compositeConfiguration>
+        <option name="distributionType" value="LOCAL" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="gradleHome" value="$PROJECT_DIR$/../../app/gradle-8.9-all/gradle-8.9" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
@@ -24,7 +26,18 @@
             <option value="$PROJECT_DIR$/datastructure-algorithms" />
             <option value="$PROJECT_DIR$/design-pattern" />
             <option value="$PROJECT_DIR$/java-io" />
+            <option value="$PROJECT_DIR$/net" />
             <option value="$PROJECT_DIR$/spring-framework-6.18" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="distributionType" value="LOCAL" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/net" />
+        <option name="gradleHome" value="$PROJECT_DIR$/../../app/gradle-8.9-all/gradle-8.9" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/net" />
           </set>
         </option>
       </GradleProjectSettings>
