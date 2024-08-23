@@ -1,4 +1,4 @@
-package com.ivan.characterStream;
+package com.ivan.character;
 
 import java.io.*;
 

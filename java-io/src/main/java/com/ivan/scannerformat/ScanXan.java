@@ -1,4 +1,4 @@
-package com.ivan.scannerAndFormat;
+package com.ivan.scannerformat;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

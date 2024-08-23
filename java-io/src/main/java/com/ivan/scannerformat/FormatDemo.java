@@ -1,6 +1,4 @@
-package com.ivan.scannerAndFormat;
-
-import java.sql.SQLOutput;
+package com.ivan.scannerformat;
 
 public class FormatDemo {
     public static void main(String[] args) {

@@ -1,10 +1,9 @@
-package com.ivan.dataStream;
+package com.ivan.data;
 
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 
 public class DataStreamDemo {
     static final String dataFile = "invoicedata.txt";

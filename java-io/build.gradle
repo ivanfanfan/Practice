@@ -9,7 +9,6 @@ plugins {
 }
 
 dependencies {
-    testImplementation libs.junit.junit
 }
 
 description = 'java-io'
