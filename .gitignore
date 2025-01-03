@@ -40,3 +40,6 @@ build/
 ### Gradle ###
 build-logic/.gradle/
 !**/build/
+.idea
+./**/out/
+./**/.gradle/
