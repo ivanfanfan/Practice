@@ -19,4 +19,13 @@
           p:username="root"
           p:password="123456"
     />
+    <bean id="lazyBean" class="com.ivan.c3.LazyBean" lazy-init="true"/>
+    <bean id="non-lazyBean" class="com.ivan.c3.NonLazyBean"/>
+    <bean id="autowiringModeBean1" class="com.ivan.c3.AutowiringModeBean1" autowire="byType">
+        <property name="auto" ref="autowiredBean"/>
+<!--        注入map集合-->
+
+    </bean>
+    <bean id="autowiredBean" name="auto" class="com.ivan.c3.AutowiredBean"/>
+
 </beans>
