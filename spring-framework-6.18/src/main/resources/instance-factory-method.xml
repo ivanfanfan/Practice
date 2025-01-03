@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id = "serviceLocator"
+          class="com.ivan.a1.factory.DefaultServiceLocator">
+    </bean>
+
+
+    <bean id="clientServiceBean" factory-bean="serviceLocator"
+          factory-method="createClientServiceInstance"/>
+
+    <bean id="accountServiceBean" factory-bean="serviceLocator"
+          factory-method="createAccountServiceInstance"/>
+    <bean id="clientService" class="com.ivan.a1.factory.ClientService"/>
+    <bean id="accountService" class="com.ivan.a1.factory.AccountService"/>
+
+</beans>

@@ -22,17 +22,11 @@ import org.springframework.context.support.GenericApplicationContext;
  *
  */
 public class Main {
-    /**
-     * TODO
-     * mondatory somewhat compatible
-     *
-     *
-     * @param args
-     */
+
     public static void main(String[] args) {
         GenericApplicationContext context = new GenericApplicationContext();
 //        new GroovyBeanDefinitionReader(context).loadBeanDefinitions("services.groovy", "daos.groovy");
-        new XmlBeanDefinitionReader(context).loadBeanDefinitions("beans.xml","services.xml");
+        new XmlBeanDefinitionReader(context).loadBeanDefinitions("beans.xml", "person.xml");
         context.refresh();
         Person bean = (Person) context.getBean("person");
         System.out.println(bean);

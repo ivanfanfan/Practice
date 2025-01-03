@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+
+    <beans>
+        <bean id = "simpleMovieLister" class="com.ivan.a2.SimpleMovieLister">
+            <property name="movieFinder" ref="movieFinder"/>
+        </bean>
+        <bean id = "movieFinder" class="com.ivan.a2.MovieFinder"/>
+
+
+        <bean id = "beanOne" class="com.ivan.a2.BeanOne">
+            <constructor-arg ref="beanTwo"/>
+            <constructor-arg ref="beanThree"/>
+        </bean>
+        <bean id = "beanTwo" class="com.ivan.a2.BeanTwo"/>
+        <bean id = "beanThree" class="com.ivan.a2.BeanThree"/>
+
+        <bean id = "exampleBean" class="com.ivan.a2.ExampleBean">
+            <constructor-arg type="int" value="123"/>
+            <constructor-arg type="java.lang.String" value="hahha"/>
+        </bean>
+    </beans>
+
+
+</beans>
