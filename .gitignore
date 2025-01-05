@@ -43,3 +43,6 @@ build-logic/.gradle/
 .idea
 ./**/out/
 ./**/.gradle/
+/spring-framework-6.18/.gradle/
+/spring-framework-6.18/build/
+/spring-framework-6.18/out/
