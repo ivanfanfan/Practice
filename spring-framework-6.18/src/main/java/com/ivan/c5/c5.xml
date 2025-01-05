@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="exampleInitBean" class="com.ivan.c5.ExampleBean" init-method="init"/>
+    <bean id="anotherExampleInitBean" class="com.ivan.c5.AnotherExampleBean" init-method="init"/>
+
+    <beans default-init-method="initialization">
+        <bean id="defaultInitOrDestroy" class="com.ivan.c5.DefaultInitOrDestroy">
+            <property name="anotherExampleBean" ref="anotherExampleInitBean"/>
+        </bean>
+    </beans>
+
+    <beans>
+        <bean id="inheritedTestBean" abstract="true"
+              class="com.ivan.c5.InheritedTestBean">
+            <property name="name" value="parent"/>
+            <property name="age" value="1"/>
+        </bean>
+
+        <bean id="inheritsWithDifferentClass" class="com.ivan.c5.InheritsWithDifferentClass">
+            <property name="name"   value="override"/>
+        </bean>
+        <bean class="com.ivan.c5.InstantiationTracingBeanPostProcessor"/>
+    </beans>
+
+</beans>
