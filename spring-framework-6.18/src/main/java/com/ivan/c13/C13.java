@@ -17,13 +17,17 @@ import java.util.List;
 
 public class C13 {
     static final String path = "D:\\ivan-project\\Practice\\spring-framework-6.18\\src\\main\\java\\com\\ivan\\c13\\c13.xml";
+
     static final String propertiesPath = "D:\\ivan-project\\Practice\\spring-framework-6.18\\src\\main\\java\\com\\ivan\\c13\\c13.properties";
 
     public static void main(String[] args) {
 //        test1();
 //        test2();
-        test3();
+//        test3();
+        System.out.println(Integer.MAX_VALUE);
+        System.out.println(Integer.MIN_VALUE);
     }
+
 
     private static void test3() {
         DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
