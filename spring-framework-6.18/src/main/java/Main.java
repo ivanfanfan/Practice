@@ -1,4 +1,3 @@
-import com.ivan.pojo.Person;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
 
@@ -28,8 +27,8 @@ public class Main {
 //        new GroovyBeanDefinitionReader(context).loadBeanDefinitions("services.groovy", "daos.groovy");
         new XmlBeanDefinitionReader(context).loadBeanDefinitions("beans.xml", "person.xml");
         context.refresh();
-        Person bean = (Person) context.getBean("person");
-        System.out.println(bean);
+//        Person bean = (Person) context.getBean("person");
+//        System.out.println(bean);
 
     }
 }

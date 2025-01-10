@@ -1,9 +1,6 @@
 package com.ivan.a1;
 
 import com.ivan.a1.factory.AccountService;
-import com.ivan.a1.factory.ClientService;
-import com.ivan.a1.factory.DefaultServiceLocator;
-import com.ivan.pojo.Person;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
@@ -30,8 +27,8 @@ public class A1 {
         ClientService clientService = context.getBean("clientService", ClientService.class);
         System.out.println(clientService);
         DefaultServiceLocator serviceLocator = context.getBean("serviceLocator", DefaultServiceLocator.class);
-        ClientService clientServiceInstance = serviceLocator.createClientServiceInstance();
-        System.out.println(clientServiceInstance);
+//        ClientService clientServiceInstance = serviceLocator.createClientServiceInstance();
+//        System.out.println(clientServiceInstance);
 
         AccountService accountService = context.getBean("accountService", AccountService.class);
         System.out.println(accountService);
@@ -64,17 +61,18 @@ public class A1 {
     private static void test4() {
         GenericApplicationContext context = new GenericApplicationContext();
         new XmlBeanDefinitionReader(context).
-                loadBeanDefinitions("beans.xml","alias.xml", "person.xml");
+                loadBeanDefinitions("beans.xml", "alias.xml", "person.xml");
         context.refresh();
         Person person = context.getBean("person1", Person.class);
         System.out.println(person);
     }
 
+
     private static void test3() {
         GenericApplicationContext context =
-                 new GenericApplicationContext();
+                new GenericApplicationContext();
         ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-        if(beanFactory instanceof DefaultListableBeanFactory factory) {
+        if (beanFactory instanceof DefaultListableBeanFactory factory) {
 
             factory.registerSingleton("person", new Person());
 //            factory.registerBeanDefinition();
@@ -103,6 +101,31 @@ public class A1 {
 
         Person person = context.getBean("person", Person.class);
         System.out.println(person);
+    }
+
+
+}
+
+class ClientService {
+    public static Person createInstance() {
+        return new Person();
+    }
+}
+
+class Person {
+}
+
+class DefaultServiceLocator {
+    public static ClientService clientService = new ClientService();
+
+    public static AccountService accountService = new AccountService();
+
+    public ClientService createClientServiceInstance() {
+        return clientService;
+    }
+
+    public AccountService createAccountServiceInstance() {
+        return accountService;
     }
 
 
