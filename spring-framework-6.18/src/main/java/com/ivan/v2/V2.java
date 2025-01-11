@@ -1,18 +1,14 @@
 package com.ivan.v2;
 
-import com.fasterxml.classmate.ResolvedType;
-import com.fasterxml.classmate.TypeBindings;
-import com.fasterxml.classmate.TypeResolver;
-import com.fasterxml.classmate.types.ResolvedObjectType;
 import lombok.Data;
-import lombok.extern.flogger.Flogger;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.*;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.MutablePropertyValues;
+import org.springframework.beans.PropertyValue;
 import org.springframework.core.ResolvableType;
 import org.springframework.validation.DataBinder;
 
 import java.util.Objects;
-import java.util.Set;
 
 //@Slf4j
 public class V2 {

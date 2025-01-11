@@ -35,6 +35,18 @@ public class V1 {
 
 
 }
+class PersonValidator implements Validator{
+
+    @Override
+    public boolean supports(Class<?> clazz) {
+        return false;
+    }
+
+    @Override
+    public void validate(Object target, Errors errors) {
+
+    }
+}
 class AddressValidator implements Validator{
 
 
@@ -52,9 +64,12 @@ class AddressValidator implements Validator{
 
 class CustomerValidator implements Validator {
 
-        }
-    }
 
+    private Validator addressValidator;
+
+    public CustomerValidator(Validator addressValidator) {
+        this.addressValidator = addressValidator;
+    }
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -85,8 +100,21 @@ class Customer{
     Address address;
 }
 @Data
+class Person{
     @NotNull
     String name;
     @Min(0)
     int age;
+}
+@Data
+class Address{
+
+    public Address(String city, String state) {
+        this.city = city;
+        this.state = state;
+    }
+
+    String city;
+    String state;
+
 }
