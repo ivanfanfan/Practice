@@ -52,18 +52,7 @@ class AddressValidator implements Validator{
 
 class CustomerValidator implements Validator {
 
-    private final Validator addressValidator;
-
-    CustomerValidator(Validator addressValidator) {
-        if(addressValidator == null){
-            throw new IllegalArgumentException(" The supplied [Validator] is " +
-                    "required and must not be null");
         }
-        if(!addressValidator.supports(Address.class)){
-            throw new IllegalArgumentException(" The supplied [Validator] must" +
-                    "support the validation of [Address] instance");
-        }
-        this.addressValidator = addressValidator;
     }
 
 
@@ -96,33 +85,6 @@ class Customer{
     Address address;
 }
 @Data
-@AllArgsConstructor
-class Address{
-    String city;
-    String state;
-}
-//record Address(String City,String state){}
-
-class PersonValidator implements Validator {
-
-    @Override
-    public boolean supports(Class<?> clazz) {
-        return Person.class.equals(clazz);
-    }
-
-    @Override
-    public void validate(Object target, Errors errors) {
-        ValidationUtils.rejectIfEmpty(errors, "name", "name.empty");
-        Person person = (Person) target;
-        if (person.getAge() < 0) {
-            errors.rejectValue("age", "negative value");
-        } else if (person.getAge() > 100) {
-            errors.rejectValue("age", "age greater than 100");
-        }
-    }
-}
-@Data
-class Person {
     @NotNull
     String name;
     @Min(0)
