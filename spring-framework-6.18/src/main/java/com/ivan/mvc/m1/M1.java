@@ -16,14 +16,11 @@ import org.springframework.web.servlet.DispatcherServlet;
 public class M1 {
     public static void main(String[] args) throws ServletException {
         //这里传什么进去
-        AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-        context.setServletContext(new ApplicationContext(new StandardContext()));
-        ServletContext servletContext = context.getServletContext();
-        MyWebAppInitializer myWebAppInitializer = new MyWebAppInitializer();
-        myWebAppInitializer.onStartup(servletContext);
+
     }
 }
 
+// here need external tomcat to run this web application
 class MyWebApplicationInitializer implements WebApplicationInitializer {
 
     @Override
@@ -37,30 +34,4 @@ class MyWebApplicationInitializer implements WebApplicationInitializer {
         registration.setLoadOnStartup(1);
         registration.addMapping("/app/*");
     }
-}
-class MyWebAppInitializer implements WebApplicationInitializer {
-
-    @Override
-    public void onStartup(ServletContext container) {
-        // Create the 'root' Spring application context
-        AnnotationConfigWebApplicationContext rootContext =
-                new AnnotationConfigWebApplicationContext();
-//        rootContext. register(AppConfig. class);
-
-        // Manage the lifecycle of the root application context
-//        container.addListener(new ContextLoaderListener(rootContext));
-
-        // Create the dispatcher servlet's Spring application context
-        AnnotationConfigWebApplicationContext dispatcherContext =
-                new AnnotationConfigWebApplicationContext();
-//        DispatcherServlet dispatcherServlet = new DispatcherServlet(dispatcherContext);
-//        dispatcherContext.register(dispatcherServlet);
-
-        // Register and map the dispatcher servlet
-        ServletRegistration. Dynamic dispatcher =
-                container. addServlet("dispatcher", new DispatcherServlet(dispatcherContext));
-        dispatcher. setLoadOnStartup(1);
-        dispatcher. addMapping("/");
-    }
-
 }
