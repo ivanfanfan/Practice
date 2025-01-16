@@ -20,10 +20,8 @@ dependencies {
     implementation group: 'org.springframework', name: 'spring-webmvc', version: '6.2.1'
     implementation group: 'org.springframework', name: 'spring-web', version: '6.2.1'
     //spring 内嵌tomcat容器
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '10.1.15' // 根据需要选择版本
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-el', version: '10.1.15' // EL表达式支持
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '10.1.15' // WebSocket支持
-
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat', version: '3.4.1'
+    implementation group: 'org.springframework.boot' ,name: 'spring-boot-starter-web', version: '3.4.1'
 //  hibe  validation
 //  https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator
     implementation group: 'org.hibernate.validator', name: 'hibernate-validator', version: '8.0.1.Final'
