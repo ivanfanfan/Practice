@@ -15,4 +15,5 @@ include(':datastructure-algorithms')
 include(':design-pattern')
 include(':current-programming')
 include(':spring-framework-6.18')
+include('spring-security')
 include 'java-base'
