@@ -5,13 +5,21 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.beans.propertyeditors.CustomNumberEditor;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.ResolvableType;
 import org.springframework.validation.DataBinder;
 
+import java.beans.*;
 import java.util.Objects;
 
 //@Slf4j
 public class V2 {
+
+    final static String path = "E:\\code\\Practice\\spring-framework-6.18\\src\\main\\java\\com\\ivan\\v2\\v2.xml";
     public static void main(String[] args) {
 //        test1();
 //        test2();
@@ -20,6 +28,14 @@ public class V2 {
 
     private static void test3() {
 
+        GenericApplicationContext context = new GenericApplicationContext();
+        XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(context);
+        reader.loadBeanDefinitions("file:"+path);
+        context.refresh();
+        DependsOnExoticType simple = context.getBean("simple", DependsOnExoticType.class);
+        System.out.println(simple);
+        System.out.println(simple.type);
+        System.out.println(simple.type.name);
     }
 
     // BeanWrapper and PropertyValue
@@ -60,7 +76,49 @@ public class V2 {
 
     }
 }
+class ExoticTypeEditor extends PropertyEditorSupport {
+    public void setAsText(String text) throws IllegalArgumentException {
+        setValue(new ExoticType(text.toUpperCase()));
+    }
+}
 
+
+class ExoticType {
+    String name;
+    public ExoticType(String name){
+        this.name = name;
+    }
+}
+class DependsOnExoticType{
+    ExoticType type;
+    public void setType(ExoticType type){
+        this.type = type;
+    }
+}
+
+class SomethingBeanInfo extends SimpleBeanInfo{
+    public PropertyDescriptor[] getPropertyDescriptors(){
+        try {
+            final PropertyEditor numberPE = new CustomNumberEditor(Integer.class,true);
+            PropertyDescriptor ageDescriptor = new PropertyDescriptor("age",Something.class){
+//                @Override
+                public PropertyEditor getPropertyEditor() {
+                    return numberPE;
+                }
+
+            };
+            return new PropertyDescriptor[]{ageDescriptor};
+        }
+        catch (IntrospectionException e) {
+            throw new Error(e.toString());
+        }
+    }
+}
+
+@Data
+class Something {
+    int age;
+}
 final class Company {
     String name;
     Employee managingDirector;

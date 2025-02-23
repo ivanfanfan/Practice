@@ -19,3 +19,5 @@ include(':spring-security')
 include ':java-base'
 include ':spring-security-wef'
 include(':spring-security-wef:spring-security-getting-start')
+include 'execel-web'
+
