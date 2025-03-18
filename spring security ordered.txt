@@ -1,4 +1,6 @@
+annotate
 Alternatively
+Anonymous
 afoul
 afterward
 audience
@@ -7,6 +9,7 @@ authenticate
 authorization
 authorize
 bearer
+clue
 compromise
 consult
 coordinate
@@ -38,8 +41,13 @@ protend
 protocol
 pseudo
 recommentdation
+registration
+register
+registry
 sniff
 sniffing
+tenant
+thumb
 troubleshoot
 transport
 victim
@@ -49,4 +57,4 @@ wrap
 
 
 clear out
-
+the rule of thumb

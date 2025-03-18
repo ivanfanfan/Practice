@@ -1,14 +1,46 @@
 package com.ivan.character;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class CopyLines {
     public static void main(String[] args) throws Exception {
 //        test1();
-        test2();
+//        test2();
+        test3();
+
+    }
+
+    private static void test3() throws Exception {
+        BufferedReader inputStream = new BufferedReader(new FileReader("E:\\code\\Practice\\a.txt"));
+        PrintWriter outputStream = new PrintWriter(new FileWriter("E:\\code\\Practice\\b.txt"));
+        String line;
+        HashMap<String,Integer> map = new LinkedHashMap<>();
+        while((line = inputStream.readLine())!= null ){
+            //空格 换行符
+            String[] words = line.split("\\s+");
+            for(int i = 0 ; i < words.length ; i++){
+                words[i] = words[i].toLowerCase();
+                if(map.containsKey(words[i])){
+                    map.put(words[i], map.get(words[i]) + 1);
+                }else {
+                    map.put(words[i], 1);
+                }
+            }
+        }
+
+        for (String s : map.keySet()) {
+            System.out.print(s + " " + map.get(s) + " ");
+        }
+
+        List<String> list = map.keySet().stream().sorted((o1, o2) -> map.get(o2).compareTo(map.get(o1))).collect(Collectors.toList());
+        for (String s : list) {
+            System.out.println(s+" "+map.get(s));
+            outputStream.println(s);
+        }
+        inputStream.close();
+        outputStream.close();
     }
 
     private static void test2() throws Exception {
