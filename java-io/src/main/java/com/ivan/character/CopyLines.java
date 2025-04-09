@@ -13,8 +13,20 @@ public class CopyLines {
     }
 
     private static void test3() throws Exception {
+        /**
+         * read exclusive txt
+         */
+        BufferedReader exclusiveInput = new BufferedReader(new FileReader("E:\\code\\Practice\\exclusive.txt"));
+        Set<String> exclusiveLines = new HashSet<>();
+        String exclusiveLine;
+        while(( exclusiveLine= exclusiveInput.readLine()) != null){
+            exclusiveLines.add(exclusiveLine);
+        }
+
+
+
         BufferedReader inputStream = new BufferedReader(new FileReader("E:\\code\\Practice\\a.txt"));
-        PrintWriter outputStream = new PrintWriter(new FileWriter("E:\\code\\Practice\\b.txt"));
+        PrintWriter outputStream = new PrintWriter(new FileWriter("E:\\code\\Practice\\c.txt"));
         String line;
         HashMap<String,Integer> map = new LinkedHashMap<>();
         while((line = inputStream.readLine())!= null ){
@@ -37,9 +49,12 @@ public class CopyLines {
         List<String> list = map.keySet().stream().sorted((o1, o2) -> map.get(o2).compareTo(map.get(o1))).collect(Collectors.toList());
         for (String s : list) {
             System.out.println(s+" "+map.get(s));
-            outputStream.println(s);
+            if(!exclusiveLines.contains(s)) {
+                outputStream.println(s);
+            }
         }
         inputStream.close();
+        exclusiveInput.close();
         outputStream.close();
     }
 
