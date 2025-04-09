@@ -25,7 +25,7 @@ public class CopyLines {
 
 
 
-        BufferedReader inputStream = new BufferedReader(new FileReader("E:\\code\\Practice\\a.txt"));
+        BufferedReader inputStream = new BufferedReader(new FileReader("E:\\code\\Practice\\b.txt"));
         PrintWriter outputStream = new PrintWriter(new FileWriter("E:\\code\\Practice\\c.txt"));
         String line;
         HashMap<String,Integer> map = new LinkedHashMap<>();
