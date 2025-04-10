@@ -1,0 +1,9 @@
+subtlety
+radix
+summation
+pseudo
+pseudocode
+spread
+expressive
+concise
+contiguous
