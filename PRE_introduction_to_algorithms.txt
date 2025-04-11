@@ -1,0 +1,53 @@
+2.3.1 The divide-and-conquer method
+Many useful algorithms are recursive in structure: to solve a given problem, they
+recurse (call themselves) one or more times to handle closely related subprob-
+lems. These algorithms typically follow the divide-and-conquer method: they
+break the problem into several subproblems that are similar to the original prob-
+lem but smaller in size, solve the subproblems recursively, and then combine these
+solutions to create a solution to the original problem.
+In the divide-and-conquer method, if the problem is small enough4the base
+case4you just solve it directly without recursing. Otherwise4the recursive case
+4you perform three characteristic steps:
+Divide the problem into one or more subproblems that are smaller instances of the
+same problem.
+Conquer the subproblems by solving them recursively.
+Combine the subproblem solutions to form a solution to the original problem.
+The merge sort algorithm closely follows the divide-and-conquer method. In
+each step, it sorts a subarray AŒp W r�, starting with the entire array AŒ1 W n� and
+recursing down to smaller and smaller subarrays. Here is how merge sort operates:
+be copied back into AŒp W r� and copies it back in. As the comments indicate, the
+index k gives the position of A that is being ûlled in, and the indices i and j give the
+positions in L and R, respectively, of the smallest remaining values. Eventually,
+either all of L or all of R is copied back into AŒp W r�, and this loop terminates.
+If the loop terminates because all of R has been copied back, that is, because j
+equals n R , then i is still less than n L , so that some of L has yet to be copied back,
+and these values are the greatest in both L and R. In this case, the while loop
+of lines 20323 copies these remaining values of L into the last few positions of
+AŒp W r�. Because j equals n R , the while loop of lines 24327 iterates 0 times. If
+instead the while loop of lines 12318 terminates because i equals n L , then all of L
+has already been copied back into AŒp W r�, and the while loop
+be copied back into AŒp W r� and copies it back in. As the comments indicate, the
+index k gives the position of A that is being ûlled in, and the indices i and j give the
+positions in L and R, respectively, of the smallest remaining values. Eventually,
+either all of L or all of R is copied back into AŒp W r�, and this loop terminates.
+If the loop terminates because all of R has been copied back, that is, because j
+equals n R , then i is still less than n L , so that some of L has yet to be copied back,
+and these values are the greatest in both L and R. In this case, the while loop
+of lines 20323 copies these remaining values of L into the last few positions of
+AŒp W r�. Because j equals n R , the while loop of lines 24327 iterates 0 times. If
+instead the while loop of lines 12318 terminates because i equals n L , then all of L
+has already been copied back into AŒp W r�, and the while loop
+This chapter introduces another sorting algorithm: heapsort. Like merge sort, but
+unlike insertion sort, heapsort’s running time is O.n lg n/. Like insertion sort, but
+unlike merge sort, heapsort sorts in place: only a constant number of array elements
+are stored outside the input array at any time. Thus, heapsort combines the better
+attributes of the two sorting algorithms we have already discussed.
+Heapsort also introduces another algorithm design technique: using a data struc-
+ture, in this case one we call a <heap,= to manage information. Not only is the heap
+data structure useful for heapsort, but it also makes an efûcient priority queue. The
+heap data structure will reappear in algorithms in later chapters.
+The term <heap= was originally coined in the context of heapsort, but it has since
+come to refer to <garbage-collected storage,= such as the programming languages
+Java and Python provide. Please don’t be confused. The heap data structure is not
+garbage-collected storage. This book is consistent in using the term <heap= to refer
+to the data structure, not the storage class.
