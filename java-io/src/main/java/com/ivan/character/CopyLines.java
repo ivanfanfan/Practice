@@ -8,8 +8,8 @@ public class CopyLines {
     public static void main(String[] args) throws Exception {
 //        test1();
 //        test2();
-//        test3();
-test4();
+        test3();
+//test4();
     }
 
     private static void test3() throws Exception {
@@ -30,7 +30,7 @@ test4();
         HashMap<String, Integer> map = new LinkedHashMap<>();
         while ((line = inputStream.readLine()) != null) {
             //空格 换行符
-            String[] words = line.split("\\s+");
+            String[] words = line.split("[^a-zA-Z'-]+");
             for (int i = 0; i < words.length; i++) {
                 words[i] = words[i].toLowerCase();
                 if (map.containsKey(words[i])) {
