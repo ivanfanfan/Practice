@@ -8,4 +8,7 @@ plugins {
     id 'buildlogic.java-conventions'
 }
 
+dependencies {
+    implementation 'org.springframework.test:spring-test'
+}
 description = 'datastructure-algorithms'
