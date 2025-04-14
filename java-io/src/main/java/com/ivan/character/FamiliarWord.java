@@ -7,10 +7,10 @@ import java.util.Set;
 
 public class FamiliarWord {
 
-    private static final String ORIGINAL_FILE_PATH = "D:\\ivan-project\\Practice\\PRE_introduction_to_algorithms.txt";
-    private static final String FAMILIAR_FILE_PATH = "D:\\ivan-project\\Practice\\exclusive.txt";
-    private static final String ALREADY_LEARN_FILE_PATH = "D:\\ivan-project\\Practice\\ALREADY_introduction_to_algorithms.txt";
-    private static final String UNFAMILIAR_FILE_PATH = "D:\\ivan-project\\Practice\\UNFAM_introduction_to_algorithms.txt";
+    private static final String ORIGINAL_FILE_PATH = ".\\PRE_introduction_to_algorithms.txt";
+    private static final String FAMILIAR_FILE_PATH = ".\\exclusive.txt";
+    private static final String ALREADY_LEARN_FILE_PATH = ".\\ALREADY_introduction_to_algorithms.txt";
+    private static final String UNFAMILIAR_FILE_PATH = ".\\UNFAM_introduction_to_algorithms.txt";
 
 
 

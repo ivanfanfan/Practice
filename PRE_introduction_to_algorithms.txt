@@ -1,53 +1,38 @@
-2.3.1 The divide-and-conquer method
-Many useful algorithms are recursive in structure: to solve a given problem, they
-recurse (call themselves) one or more times to handle closely related subprob-
-lems. These algorithms typically follow the divide-and-conquer method: they
-break the problem into several subproblems that are similar to the original prob-
-lem but smaller in size, solve the subproblems recursively, and then combine these
-solutions to create a solution to the original problem.
-In the divide-and-conquer method, if the problem is small enough4the base
-case4you just solve it directly without recursing. Otherwise4the recursive case
-4you perform three characteristic steps:
-Divide the problem into one or more subproblems that are smaller instances of the
-same problem.
-Conquer the subproblems by solving them recursively.
-Combine the subproblem solutions to form a solution to the original problem.
-The merge sort algorithm closely follows the divide-and-conquer method. In
-each step, it sorts a subarray AŒp W r�, starting with the entire array AŒ1 W n� and
-recursing down to smaller and smaller subarrays. Here is how merge sort operates:
-be copied back into AŒp W r� and copies it back in. As the comments indicate, the
-index k gives the position of A that is being ûlled in, and the indices i and j give the
-positions in L and R, respectively, of the smallest remaining values. Eventually,
-either all of L or all of R is copied back into AŒp W r�, and this loop terminates.
-If the loop terminates because all of R has been copied back, that is, because j
-equals n R , then i is still less than n L , so that some of L has yet to be copied back,
-and these values are the greatest in both L and R. In this case, the while loop
-of lines 20323 copies these remaining values of L into the last few positions of
-AŒp W r�. Because j equals n R , the while loop of lines 24327 iterates 0 times. If
-instead the while loop of lines 12318 terminates because i equals n L , then all of L
-has already been copied back into AŒp W r�, and the while loop
-be copied back into AŒp W r� and copies it back in. As the comments indicate, the
-index k gives the position of A that is being ûlled in, and the indices i and j give the
-positions in L and R, respectively, of the smallest remaining values. Eventually,
-either all of L or all of R is copied back into AŒp W r�, and this loop terminates.
-If the loop terminates because all of R has been copied back, that is, because j
-equals n R , then i is still less than n L , so that some of L has yet to be copied back,
-and these values are the greatest in both L and R. In this case, the while loop
-of lines 20323 copies these remaining values of L into the last few positions of
-AŒp W r�. Because j equals n R , the while loop of lines 24327 iterates 0 times. If
-instead the while loop of lines 12318 terminates because i equals n L , then all of L
-has already been copied back into AŒp W r�, and the while loop
-This chapter introduces another sorting algorithm: heapsort. Like merge sort, but
-unlike insertion sort, heapsort’s running time is O.n lg n/. Like insertion sort, but
-unlike merge sort, heapsort sorts in place: only a constant number of array elements
-are stored outside the input array at any time. Thus, heapsort combines the better
-attributes of the two sorting algorithms we have already discussed.
-Heapsort also introduces another algorithm design technique: using a data struc-
-ture, in this case one we call a <heap,= to manage information. Not only is the heap
-data structure useful for heapsort, but it also makes an efûcient priority queue. The
-heap data structure will reappear in algorithms in later chapters.
-The term <heap= was originally coined in the context of heapsort, but it has since
-come to refer to <garbage-collected storage,= such as the programming languages
-Java and Python provide. Please don’t be confused. The heap data structure is not
-garbage-collected storage. This book is consistent in using the term <heap= to refer
-to the data structure, not the storage class.
+The quicksort algorithm has a worst-case running time of ‚.n 2 / on an input array
+of n numbers. Despite this slow worst-case running time, quicksort is often the
+best practical choice for sorting because it is remarkably efûcient on average: its
+expected running time is ‚.n lg n/ when all numbers are distinct, and the constant
+factors hidden in the ‚.n lg n/ notation are small. Unlike merge sort, it also has
+the advantage of sorting in place (see page 158), and it works well even in virtual-
+memory environments.
+Our study of quicksort is broken into four sections. Section 7.1 describes the
+algorithm and an important subroutine used by quicksort for partitioning. Because
+the behavior of quicksort is complex, we’ll start with an intuitive discussion of
+its performance in Section 7.2 and analyze it precisely at the end of the chapter.
+Section 7.3 presents a randomized version of quicksort. When all elements are
+distinct, 1 this randomized algorithm has a good expected running time and no par-
+ticular input elicits its worst-case behavior. (See Problem 7-2 for the case in which
+elements may be equal.) Section 7.4 analyzes the randomized algorithm, showing
+that it runs in ‚.n 2 / time in the worst case and, assuming distinct elements, in
+expected O.n lg n/ time.
+Figure 2.4 The operation of merge sort on the array A with length 8 that initially contains the
+sequence h12; 3; 7; 9; 14; 6; 11; 2i. The indices p, q, and r into each subarray appear above their
+values. Numbers in italics indicate the order in which the M ERGE-SORT and MERGE procedures are
+called following the initial call of MERGE-SORT.A; 1; 8/.
+D.n/ C aT .n=b/ C C.n/ otherwise :
+Chapter 4 shows how to solve common recurrences of this form.
+Sometimes, the n=b size of the divide step isn’t an integer. For example, the
+MERGE-SORT procedure divides a problem of size n into subproblems of sizes
+dn=2e and bn=2c. Since the difference between dn=2e and bn=2c is at most 1,
+2.3 Designing algorithms
+41
+which for large n is much smaller than the effect of dividing n by 2, we’ll squint a
+little and just call them both size n=2. As Chapter 4 will discuss, this simpliûcation
+of ignoring üoors and ceilings does not generally affect the order of growth of a
+solution to a divide-and-conquer recurrence.
+Another convention we’ll adopt is to omit a statement of the base cases of the
+recurrence, which we’ll also discuss in more detail in Chapter 4. The reason is
+that the base cases are pretty much always T .n/ D ‚.1/ if n < n 0 for some
+constant n 0 > 0. That’s because the running time of an algorithm on an input of
+constant size is constant. We save ourselves a lot of extra writing by adopting this
+convention.

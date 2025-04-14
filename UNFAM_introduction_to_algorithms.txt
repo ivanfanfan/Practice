@@ -34,7 +34,14 @@ devise
 messy
 quadratic
 characteristic
-bottom out 触底
+bottom out
 motif
 proportional
 coined
+opaque
+embellishment
+elicit
+unwieldy
+fall out from
+squint
+
