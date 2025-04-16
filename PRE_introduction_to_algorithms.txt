@@ -36,3 +36,27 @@ that the base cases are pretty much always T .n/ D ‚.1/ if n < n 0 for some
 constant n 0 > 0. That’s because the running time of an algorithm on an input of
 constant size is constant. We save ourselves a lot of extra writing by adopting this
 convention.
+Divide-and-Conquer
+The divide-and-conquer method is a powerful strategy for designing asymptotically
+efûcient algorithms. We saw an example of divide-and-conquer in Section 2.3.1
+when learning about merge sort. In this chapter, we’ll explore applications of the
+divide-and-conquer method and acquire valuable mathematical tools that you can
+use to solve the recurrences that arise when analyzing divide-and-conquer algorithms.
+Recall that for divide-and-conquer, you solve a given problem (instance) recursively.
+If the problem is small enough4the base case4you just solve it directly
+without recursing. Otherwise4the recursive case4you perform three characteristic steps:
+Divide the problem into one or more subproblems that are smaller instances of the
+same problem.
+Conquer the subproblems by solving them recursively.
+Combine the subproblem solutions to form a solution to the original problem.
+A divide-and-conquer algorithm breaks down a large problem into smaller subproblems,
+which themselves may be broken down into even smaller subproblems,
+and so forth. The recursion bottoms out when it reaches a base case and the sub-
+problem is small enough to solve directly without further recursing.
+Recurrences
+To analyze recursive divide-and-conquer algorithms, we’ll need some mathematical tools. A recurrence is an equation that describes a function in terms of its
+value on other, typically smaller, arguments. Recurrences go hand in hand with
+the divide-and-conquer method because they give us a natural way to characterize
+the running times of recursive algorithms mathematically. You saw an example
+of a recurrence in Section 2.3.2 when we analyzed the worst-case running time of
+merge sort
