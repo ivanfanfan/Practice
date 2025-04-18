@@ -16,7 +16,7 @@ public class CopyLines {
         /**
          * read exclusive txt
          */
-        BufferedReader exclusiveInput = new BufferedReader(new FileReader("E:\\code\\Practice\\exclusive.txt"));
+        BufferedReader exclusiveInput = new BufferedReader(new FileReader(".\\exclusive.txt"));
         Set<String> exclusiveLines = new HashSet<>();
         String exclusiveLine;
         while ((exclusiveLine = exclusiveInput.readLine()) != null) {
@@ -24,8 +24,8 @@ public class CopyLines {
         }
 
 
-        BufferedReader inputStream = new BufferedReader(new FileReader("E:\\code\\Practice\\b.txt"));
-        PrintWriter outputStream = new PrintWriter(new FileWriter("E:\\code\\Practice\\c.txt"));
+        BufferedReader inputStream = new BufferedReader(new FileReader(".\\b.txt"));
+        PrintWriter outputStream = new PrintWriter(new FileWriter(".\\c.txt"));
         String line;
         HashMap<String, Integer> map = new LinkedHashMap<>();
         while ((line = inputStream.readLine()) != null) {
