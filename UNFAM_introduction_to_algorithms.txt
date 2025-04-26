@@ -140,6 +140,7 @@ intricate
 boundaries
 ubiquitous
 prescribed
+degradation
 
 
 
