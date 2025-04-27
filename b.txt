@@ -1,485 +1,311 @@
-welcome back to the intermediate and event spring track i hope you're enjoying the conference so far i've been
-working with spring for many years and has funded me to see all the advancements and improvements that are announced this spring on each year
-spring data jdbc can be a really useful addition to any spring application for managing your data model
-inshotter is here to talk about some of the less obvious features of spring data jdbc i'm looking forward to hearing
-about how to take advantage of these ends i'll turn it over to you okay
-so let's do another try um welcome to my talk spring data jdbc beyond the obvious
-uh looks like i hit the mute button somehow no idea how that happened anyway
-let's get started and let's get the ugly parts out of the way um the required
-legal disclaimer that whatever tell you here you shouldn't bet money or your company on that
-um better wait before until features are actually there don't rely
-on me promising you something although i don't think i will promise much anyway
-so let's get started with the real stuff spring data jdbc um i kind of hope that you already know
-spring data jdbc when you're here in this talk um but just in case um that
-you just got curious and wanted to check it out let me give a real quick introduction in
-order to understand spring data jdbc we have to first understand what is spring data in the first place
-spring data is part of the spring ecosystem and it cares about persistence
-it tries to offer a common abstraction for various kinds of persistent stores
-there are spring data neo4j their spring jpa mongodb elasticsearch and many more
-and by common abstraction we mean that
-things look similar it's by no means intended that you can swap just one database out and another
-one in because the the feature sets of things like neo4j mongodb or relational
-database is so different that if you would actually put one api on top of that you
-would have to limit yourself to the common set of features which would be really really limiting
-instead of that we try to make things look similar so that if you've worked with one
-you will easily find your way in the other and just have to learn about the the special feature of that persistent
-store and that is also something that is really important to us we
-don't want to block your ability to use the underlying technology even if we don't um
-add any special features to that talking about special features um
-the thing spring data is kind of famous for is the ability to define repositories
-repositories a concept from domain driven design and you
-declare them in spring data just by declaring an interface and then adding
-methods to it and if the methods kind of speak for themselves something
-like find by name and your entity has an actual name then it's kind of
-obvious what kind of query you have to generate and spring data will do just that for
-you um but then there are many ways to query your database using annotations or if it
-is a really difficult thing that we don't have special support for you can still write custom methods where you
-basically can do whatever you want so the other side of the thing is jdbc
-or what's behind jdbc relational databases and if you're a little familiar with
-spring data you probably know spring data jpa it's by far the most popular
-module of spring data and jpa is a technology to access relational databases
-so one might wonder why is there spring native jdbc and the problem with jpa is
-it's complex if you start working with jpa
-start with the first tutorial things might look simple but actually
-it's really really complex and they are very um intricate concept that you need to
-understand to properly work with jpa and as i can tell from various stack
-overflow questions many people don't and many people struggle with that
-so people asked us asked the spring data team to create something like spring
-data jpa but just without jpa and that was actually the task i got when i
-joined the team four and a half years ago
-and the task was to create just that but make it simpler than jpa because
-i wouldn't be able to maintain anything close in complexity to jpa
-and i'm the the one person that mostly cares about
-spring data jdbc obviously other team members will support me but this is basically
-my task so it has to be simpler and the key
-idea to make it simple are strong aggregates
-if you look at jpa jpa tries to map a graph of objects or
-graph of classes to a graph of tables and it basically has no boundaries which leads to these
-ubiquitous language question of where should i stop loading stuff
-which then leads to eager loading and lazy loading
-and the problems associated with that and also on the other side you always
-have to wonder what am i actually saving when i call save on an entity
-and that's what you control with cascade annotations and this is an area where spring data
-jdbc is crucially different spring data jdbc makes
-a simple and hard decision whatever is reachable from the root of
-your aggregate is part of that aggregate and gets persisted together with that
-root and it also gets loaded with that root just as it is kind of prescribed by
-domain-driven design where the concept of aggregates uh comes from
-they form one one entity which is a stupid term in this context one
-one object that belongs together stays consistent
-and if you want to reference a different aggregate you now obviously
-can't use normal java reference because then that other aggregate would become
-part of the first aggregate and instead you just use ids the long or integer or whatever the id
-forms or if you want to be a little more fancy use an aggregate reference which is just a simple wrapper
-type for an id which basically marks it as an id so you don't confuse it with a long which might
-contain some monetary value or whatnot
-so with that short introduction um let's look at the challenges of
-spring data jvc as i said spring data jdbc is designed to be simple
-it is intentionally limited um with in with
-regards to some features and that obviously creates challenges
-because people want to use these features that they might be used from to from jpa or other technologies
-and that's what this talk is about we go through a couple of challenges that
-people um encounter basically stuff i got asked about on
-stack overflow and see how we can solve them using spring data jdbc
-the first one is user defined ids that was actually one of the very first
-questions that i got asked on stack overflow
-and in order to discuss all these different challenges i prepared a little project
-the link will be in the slides at the very end and
-i have a package for each challenge so you can also peek at what lies ahead
-and we have an application and to go with that a set of test cases
-in this case let's start with the test cases
-um we are dealing in this talk always with minions you know these little yellow
-funny guys um from the various films movies and we have a repository
-of such minions um let's take a look and this is if you have never seen it
-how you declare repository in spring data jdbc um or in general in spring data
-you define your interface name and you extend cred repository
-with a type parameter of the entity type which is your aggregate route and the id
-and nothing more chart repository comes with a couple of methods
-for surprise product operations and they will be provided to you
-at basically no extra cost
-and we also have a string id repository looks the same and
-let's look at the first test this is basically how you normally use spring data jdbc kind of the default
-behavior you create a minion and that minion is as simple as it gets
-the only special thing is it has an id annotation on its id
-and
-according just as you would expect the id is of course null
-and then you save it and after that the id is not no longer null
-because it gets set by the database and
-proving that i'm not lying to you the test runs just fine
-but what if you want to control the id or maybe
-the id is already coming from a different system where you import data from it you don't want to generate a new
-one or whatever reason you want to tell spring data jdbc
-use this id and none other
-and what would happen if you approach this naively is you would
-create a minion you set the id and then you call save
-but then bad things happen because spring data jdbc looks at the id
-to determine if this is a new entity or an existing one and since the id is set it will assume
-well this entity obviously exists already and if i want to save it again i have to perform an update but since it's
-actually not in the database the update will update exactly zero rows and spring
-data jdbc will notice something is wrong and throw an exception
-what you do is instead is you use the template that i skipped over in the in the beginning
-and call insert directly the ins the template
-is a jdbc aggregate template which basically offers operations that
-are used by repositories internally but you that you can also invoke directly
-and insert is probably the most useful one because it does the same that a
-repository does with a single exception the repository save method first does
-the decision is this entity new or is it an existing one and then calls either
-insert or update and by using the in the template
-you can always directly use insert and it works just fine
-and as you can see we have a third case
-with a slightly different approach this is the string id minion
-where you have already seen the matching repository for
-um declared at the beginning of the test and it's basically the same with the
-exception it has a string as like as an id and
-you can't at least most databases can't as far as i know
-generate string ids in the database so you want to we want to do that in our
-application but if we look at the code we simply do a save
-and after that the id is no longer another
-and we can also load it and
-what is going on well the trick is in the setup of our application
-because in our application which is just a straightforward spring boot application
-generated from spring.start.io
-start.spring.io and we have declared here
-a before safe callback there are exists a small collection of available
-callbacks that get called on different lifecycle stages
-of entities for aggregates to be precise and the before save callback gets called
-exactly after springdata jdbc made the decision to perform an update or an insert
-but before actually performing it so this is a good opportunity to check
-is the id actually no and then set it to some value as you desire
-and this way the code is slightly more complex i guess
-than the variant with a template.insert but as a benefit
-it looks exactly like with other entities and this handling of ids is completely removed from
-what normally should mainly contain your own your business logic
-that doesn't work
-so user-defined ids you have two options um use a jdbc aggregate
-aggregatetemplate.insert or use a before save callback to set the
-id to a value as you desire
-the next one which is rather popular is the question how do we store stuff as
-json in our database which is just a special case at least
-currently from i have this wild structure and i want to save it in
-one field in the database i don't want to take it apart and uh
-store it in some kind of relational way it's not entities it's just a value object
-that should be converted to a string a number a date or something else that
-your database can have
-and again we have a simple example um
-again a minion but this time this minion has a description
-and the description is just a bunch of data um to have
-something to play around it doesn't really matter how it looks this is just your custom object that
-we in this case want to store as json in the database um we have here two maps that can
-contain properties and that's it minion repository looks as we are used
-to and let's see
-how we use that we create our minion we set a couple
-of these values in the appearance a couple of other values and the
-personality and we save that
-and we can load it and in the standard out we should find
-that the properties get printed out so they get actually loaded
-so it does work and it
-the trick is just as with a
-previous example in the setup of the application context
-again we have a simple spring boot application but now
-we provide some explicit configuration and we extend that from abstract jdbc
-configuration normally if you create a spring boot application using spring data jdbc
-spring boot takes care of all the different beans that spring data jbc actually needs under the hood
-and all that you need to provide is some kind of data source
-but if you want to tweak things just as we are going to do now
-um as i did in this example it's a good idea to extend from abstract
-jbc configuration because that already defines all these beams and you can just
-override those that you that you want to change and the one we want to change are the
-custom conversions and we are registering registering
-two conversions description to string and string to description which
-do exactly what you would expect from their name
-they take a description or the description to string one takes a description
-and creates well not exactly a string but almost
-a jdbc value is a wrapper type which contains the actual value which is
-in this kind the string version of a json object and a jdbc type which tells your
-database driver how to handle that object in this case it's probably
-superfluous and overkill and we could just return a string and make this an actual converter from description to
-string but i wanted to showcase this jdbc value because if you want to control or need
-to control this jdbc type for your requirement and
-your specific jvc driver you can do so using just jdbc value
-and the actual conversion is as i teased this with json a conversion
-to a json object turns get turned into a string and then pass to the database
-another small but important part is this annotation writing converter
-because it tells springdale jdbc on actually spring data in general that this converter is used for writing for
-writing to the database and
-if there's a writing converter there's of course also a reading converter which is used for reading from the database
-and that's just the inverse process it gets this json string it doesn't get
-a jdbc value as one might expect the json string is basically just that what
-the jdbc driver um offers in the
-in the result set and it certainly doesn't provide jdbc values there
-so we get a string we pass it in a json object and then we take the json object apart
-and put the values in the in the proper maps as desired and return that
-and again the reading converter tells spring.jdbc that this is this converter should only
-be used for reading if we wouldn't have this at notation we might end up in a situation
-where we try to store a string and spring data jdbc gets the idea that it should convert it to a description
-before storing it in the database and that obviously wouldn't work in most of
-the cases this support for json if you want to
-call it that is obviously limited and we are right now discussing internally
-how we can improve on that probably offering some kind of out of con box
-converters and probably eventually but that is in a
-further future um also offer the ability to query inside the json objects
-because right now you can query the object the json structures
-if you use custom query annotations but
-not for like curry derivation or other stuff
-okay that's about the json conversions i realized i promised to look at slack
-from time to time
-um
-oh all these are answering question that's really nice
-um there's a question about overwriting um if the before save callbacks would
-overwrite ids generated by the database that's actually an interesting point
-where databases uh differ slightly most databases i
-encountered if you provide a value for a column that actually
-is able to generate ids the database just goes with the value it gets provided and doesn't generate an id
-the single exception is sql server which has doesn't allow that by default
-and it allows to enable that but only for a single table i found it kind of weird and um
-yeah that can become a challenge if you with sql server you probably have to
-decide what approach you use for each aggregate
-um about the somebody looks uh complained about a blurry screen i can't
-really do much about that it's quite crisp over here and i um extra
-choose a low resolution so that really should work but maybe somebody
-from the team can improve that
-and there's another question well jason to be honest i don't understand that
-question uh we should probably get into that in the q a
-afterwards so continue quick wrap up
-for storing stuff as json in the database or in general
-converting arbitrary objects to whatever you want in your database
-use a custom type we like one thing people try to do is try
-to write a custom conversion for maps or other collections that doesn't work we
-need a custom type we can actually use a java type just collections don't work
-then we register custom converters and
-we shouldn't forget about the reading and writing converter annotations to avoid problems
-the next challenge bidirectional relationships that is
-something that kind of doesn't make sense in springdale jdbc
-because remember what i said in the beginning and what
-people hopefully learn quickly when they start working with springdale jdbc
-we have two kinds of relationships we have relationships inside and aggregate and
-these are are all rooted in the aggregate root which is in our cases in our example so
-far always the minion and also everything you do with your entities if
-it's not the aggregate route itself it should still be handled by the
-aggregate route so for example if you have a purchase order with line items
-you don't just access the line item directly and change the quantity or something
-but you call a method on the purchase order
-and that does to the line item whatever you want to get done on the line item
-but that also means the line item doesn't need a reference back to the purchase order because it always gets
-called by the purchase order and if that reference is needed it can always
-provide it using just this as an additional parameter
-but maybe you have lots of these methods in your code and then you have the
-normal java capabilities to solve that problems i'll show that in
-a minute um the other kind of relationships are between aggregates
-and these aren't really references in the first place like not java references but just ids
-possibly wrapped in an aggregate reference object and if you want to navigate from one
-aggregate to the other you call the respective repository like load this aggregate for me please
-and the way work or the other way work the other way around
-works just as nice and we're going to look at that
-but don't be disappointed if it's really really simple
-so again we have a minion and it starts as all my minions and like the
-interesting part is it has toys it has a set of toys and we look at that stuff below
-later a toy is again real simple type
-and it has a back reference to minion to the minion
-but that back reference is transient and important
-this is the spring framework transit annotation
-not some um of some other standard libra java library
-and well it means spring data jdbc will ignore these this field he will not try
-to write this information to the database and if you forget that annotation spring
-data jdbc will try exactly that and in the minion it will find toys
-and the toys will have minions and so on so that won't end well
-so make sure to make these fields transient
-and in order to test that the minion is actually set
-we have a simple say hello method that prints out basically the name of
-the toy and the name of its minion
-and the simple trick is what you might have already seen in the minion in the first place
-is the minion whenever it
-gets toy set either in the constructor or if a toy gets added
-by some other means it simply adds the toy to its collection
-but then also sets toy.minion to this
-plain old java code nothing special here um
-and that's that's kind of um the thing we try to to aim for with the spring data jdbc
-spring data jdbc should take care of persisting and loading stuff and
-for everything else do whatever you want and if you want references somewhere
-just put references in there in your in your constructor um
-yeah one additional note that most people that know spring data for
-some time probably know if you have multiple constructors you can mark the one that
-should be used by spring data with the add persistence constructor annotation i'm not exactly sure away there's
-another constructor here which i prefer to use in my test code
-and again
-this hopefully works as designed
-we create a minion we add some toys we save it we load it again
-and we ask it to show its toys and the toys obviously know that they are
-the toys of bob
-for the other case um
-the case of references between aggregates
-again um we have surprise a minion and this time it has a reference to its
-evil master which is a person and since we try to write
-readable code and don't want to pass longs around
-just as we try to avoid just simple strings except for the name
-this is an aggregate reference as mentioned before it's simply a wrapper for the long
-and we also have obviously the person class
-which is just a person nothing special there
-so how do we navigate from minion to person or from person to minion
-fairly easy um
-if we again we create first
-a person in this case scarlett and
-we turn that person into a aggregator into an aggregate reference
-then we can create minions that reference
-this person scarlett and that's basically it and the other way
-around works just as uh as well if we have
-stuart here
-we can ask for the evil master and that is not a person but just an aggregate reference and we can ask the id for the
-id and then we would um use the
-um the person repository to actually load that person
-and in the opposite direction we have
-now we use find by evil master on the minions repository
-which takes an id and we look at that method
-it's again a simple spring data simple and really basic spring data feed feature
-an annotated query we just load all the minions that have as evil master the
-given id really nothing special in here
-and therefore just works as one would expect
-um looking at slack um the support for oracle databases is um
-complete yeah passes all the tests um
-well then there's some conceptual discussion if it's worth learning if everybody's work uh using
-jpa well this is the case right now i'm pretty sure in about in a couple of
-years nobody will talk about jpa anymore everybody will use spring data jdbc so
-better be early and start learning um
-yeah there's uh some discussion about how updates work that's uh
-fair criticism i i think um there will be better solutions coming up for that
-and more feature requests i guess
-all these were equipped to answer those they are not really that special to
-spring late in jdbc so
-to wrap that up bi-directional relationships if they are internal just set the back reference whenever adding
-one of these inner entities and maintain all the references that you need
-and for relationships between aggregates
-just create a custom query that does what you want
-and it gets even simpler caching if you
-if you talk to someone who is a real fan of jpa they will tell you that they use
-caching and therefore spring jpa is fast which is um
-kind of a white lie the correct part is yes they use caching
-the somewhat correct part is yes it might improve performance
-but the real thing is caching is an integral part of spring
-date of sorry of jpa jpa just doesn't work without caches
-and caches cause problems people get confused because they think
-they load stuff but in reality it's coming out of their cache and
-all kinds of stuff people try to write batch processes and
-end up with an entity manager which is basically the cache
-that is totally bloated with thousands and thousands of entities of course everything can be solved if you know how
-what is going on the problem is many people don't the approach of spring data jdbc is very
-different spring data jdbc doesn't have a cache if
-you ask multiple times for the same entity it will get loaded multiple times
-for you if you don't want that don't do that but sometimes not doing that is kind of
-difficult so having a possibility to to have a cash
-is certainly nice fortunately spring
-already offers that so let's look at a simple example to
-demonstrate that again we have a repository of minions
-and these this time our minions are colored
-as you might know minions come in the colors yellow and purple
-and the color is not a
-java awt color or something but color is a proper
-simple entity it's actually considered an aggregate
-so we create the two colors that we need yellow and purple and then we create a
-couple of minions with these colors a couple of yellow ones and
-a few purple ones and in the actual test we load all
-minions and again color is an aggregate so the reference is just an id
-and we we iterate over all the minions
-and for each one we
-try to find the color and add the color
-with a um together with the minion or the the name of the color plus the minion
-in a multi-valued map so we get as a result a color gets mapped to a
-list of minions and if we test that the result is uh as
-expected we get the keys yellow and purple and the collection for yellow has size
-eight and the one for purple has size four so
-nothing to be surprised about things just work i mean there's a reason why i don't type
-code here but if we look at the sql stuff
-statements that actually get executed we see obviously tons of minions
-getting inserted in the database then we get one select for loading all the minions
-and then we just get two selects for loading the colors
-and this is simply done in the color repository
-oh sorry repository
-which overrides the standard find by id method just to add a cachable annotation in
-here and we also for this to
-work we of course need to enable caching and we have the the caching start of spring
-boot um in there and that is all that we need for our cache for a real production application
-you want a properly configured cache i think what spring boot is using for
-tests is actually a hash map so not really suitable as a cache
-but now you have like all this stuff that you can and should do with your cache configure the time to live and
-when stuff gets injected and how much memory you want it to have and maybe you want even
-something like redis or anything that is even persistent you can do that
-behind this caching annotation completely separate from the persisting
-which is done by spring data jdbc and i think this is the way it really should be
-and not mingled up with uh the the two shouldn't be get
-mangled up
-so for caching just use spring's existing caching abstraction
-and i think i've seen a couple of more comments on slack
-um
-yeah there are a couple of questions i think i'll ask the uh answer them in the in the q a afterwards
-and try to get the last
-example across which is how do i eager load references
-well spring native jdbc basically did away with all this eager and lazy loading so
-eager loading what does that even mean well i guess even with caching
-in in some scenarios it might not help it's great in a scenario like this one where you have like a few colors
-referenced by many entities but what if you have
-purchase orders in many customers and you want to list purchase orders together with some
-information about the customers and by default
-you load the purchase order then access use the um the customer
-repository to load the customers and even if you use that in in batches
-it gets clumsy and probably slow and quite expensive
-so what can we do well the trick is
-make things more explicit
-again we have an example a minion surprise with an evil master
-basically the same that we have had before and the person is a simple object
-and we now imagine a situation where we actually want to list minions together with information about their evil
-masters for this we create a minion view
-a minion view is just just another entity actually
-one could consider it an aggregate and it's just a different way to look at
-the data just as a database view is a different way to look at the data you
-can put in here basically whatever you want as long as it is mappable by spring
-data jdbc i decided to extend from minion which basically
-gives me all the fields of the minion and then add the master
-as an embedded element
-and this way
-um i have all the data of both [Music] of both aggregates
-in in one simple package and embedded fields get loaded with a single
-a single select statement so this just works fine i could now
-create a minion view repository and
-have it map to um [Music]
-to a view or in this case i chose to
-just add a method on the minion repository that returns a minion view
-and just spell out the select that i need to load the data
-yes this is a little additional work um
-but it works just fine as i as usual can demonstrate with a little
-test where again we create a person we create
-a couple of minions that reference that person
-and for all
-minions that we can load we display their name and the name of
-their master and the results look just as one expected so
-um i guess the point here is you don't have to have just one entity
-mapping to one table you can create views either by
-custom queries as i did here or actual views in the database and map stuff to those
-um just make sure that you don't use um save or other writing methods because
-they probably won't work and if they would work they probably would not do what you expected
-them to do so these are obviously read-only operations
-but as those they work fine and of course we
-should look at this select statement maybe for for loading all these minions
-you can see it's just one select statement with a join so it should perform rather
-nicely
-so again um create an entity that
-contains the data that you actually need and then use either a dedicated
-repository or custom method to load it and if you use a repository you actually have to use a view because otherwise
-there's nothing to map this to too um if you use a query
-using a database view is optional as demonstrated
-and i'm almost out of time which fits nicely
-because i'm also out of examples
-the sources that i showed you are in this repository on github
-oh spring data jvc itself of course is also
-on github if you use spring data jdbc please do yourself a favor and you read
-this article because it explains all this stuff with aggregates and references and
-how that works in springdale and jdbc um that is the one thing that you really
-need to understand to properly use spring data jdbc if you have questions about spring data
-jpc something not working or you're not understanding something ask on stack overflow if if something is
-really broken create an issue on github and if you just want to chat with me
-you can hook up with me on twitter and for questions there is
-a different zoom channel and there's also slack and i'll move now
-to the other zoom channel which i hope you have available somehow as well
-and we'll meet there and discuss further questions and i'll try to answer them all
-see you there in a minute
-thank you ians for that informative session and thanks to our attendees for joining us for this session on spring
-data jdbc as ian's mentioned if anyone has questions please follow up with him in
-the session q a room
+all right Alexander let's do an update
+on the USChina tariff uh war and uh it
+does look like we are starting to get
+statements from from both the US and
+from China that uh we could be moving
+towards some sort of uh deescalation
+um I'm not quite sure how significant of
+a deescalation is going to be i'm not
+sure if we're getting any closer closer
+to some sort of of a bilateral
+negotiation which I imagine is the
+ultimate goal is to get both sides at
+the table so they can discuss uh how to
+move forward how how to move towards a
+managed divorce I think is the best
+outcome yes uh what are your thoughts on
+on where we're going with the tariff
+absolutely i think that is exactly
+what's happened no I mean there are uh a
+lot of reports circulating in the media
+um including the British media by the
+way that within two weeks time there
+will start to be vis visible shortages
+of goods in US stores and this is now
+putting pressure on Trump i don't know
+whether that's true could be and there
+are also other reports that Chinese
+factories have stopped production again
+probably true but again the extent to
+which that's is true is difficult to say
+but we've had the first comment from
+Trump he speaks about the fact that um
+China and the United States are going to
+uh uh see tariffs reduced he importantly
+he accepted he acknowledged that the
+current tariffs are unsustainable which
+is of course what we have been saying
+for the last two or three weeks um but
+he he's accepted that you know the
+current tariffs that China and the
+United States have against each other
+are are just unsustainable he said the
+tariffs will come down they won't come
+back down back to where they were before
+he was president i don't think anybody
+accepts that i don't think anybody in
+China accepts that it looks to me as if
+he's trying to work his way towards a
+policy of protection which is what we
+have been talking about you can agree
+with it you can disagree with it but a
+policy of protection to protect US
+manufacturing industry to bring growth
+back away from the kind of outright
+economic war which we have been seeing
+develop over the last few weeks oh there
+were important comments from Trump now
+the Chinese have been making statements
+of their own and here I'm afraid there's
+been a great deal of misdirection
+because um there was a claim that the
+Chinese said that only they would only
+talk after the United States
+rescended all unilateral tariffs in
+other words all tariffs that Trump has
+imposed since he became president back
+in J in January now I've scoured the
+Chinese media and the Chinese foreign
+ministry and other government websites
+to find confirmation of that i haven't
+found it anywhere it appears to derive
+from some words said by one official
+what the Chinese are saying and what the
+Chinese officially are saying is yes we
+are prepared to talk we're prepared to
+talk on an equal basis i mean they
+clearly are not prepared to make massive
+concessions but they're certainly
+prepared to talk and I'm going to make a
+guess i think at some point within the
+next two weeks we will see a proper
+negotiation start to get underway and
+the first steps will be taken to start
+to bring the tariffs
+down what would that mean as far as uh
+as as the escalation that has already
+taken place the 100 145% 125% are we
+going back
+to to the to the baseline to the 10% or
+the 20% and then they're going to work
+things out from there or I I I I I
+suspect that Trump is going to go down
+to 20% i think that's probably where
+this is going actually i don't which
+which I think the Chinese can can live
+with i mean they won't like it but I
+think they can live with it there will
+probably be some reciprocal tariffs from
+China as well uh but I mean the point is
+trade can happen at that level it can't
+happen when tariffs are at 145% or
+anything of that kind but it's a massive
+economic shock that we have seen and as
+you as you completely said it's
+basically um it will basically be clear
+that you know the tariff moves that have
+happened over the last uh few weeks was
+China and uh the United States serving
+on each other the economic divorce
+papers because that's what it looks like
+but at that point we we are we are into
+a situation of protecting American
+industry it is no longer an economic war
+it is no longer a project to
+um destabilize China and crush its
+economy um and I think one of the
+reasons by the
+way why we've seen a softening of the
+American approach is not just because
+um all these reports
+about goods starting to run out in
+American stores there may be some of
+that going on but I think the major
+reason is that um the
+sculpcent idea that countries around the
+world would rally to the United States
+and that China would be economically
+isolated that just didn't happen didn't
+happen yeah and and getting it getting
+to the bilateral agreements with other
+countries whether it be uh India which
+already had an agreement that they were
+working on before the uh the liberation
+day yes um Japan South Korea all these
+countries it was taking time i I think u
+the Trump administration maybe Bessant
+wasn't aware of this i find it hard to
+believe but but who knows u maybe they
+didn't understand that trade agreements
+are not hammered out in in a couple of
+weeks they can take many months to years
+yes that's under that's and that's under
+ideal circumstances that's under
+friendly uh circumstances so all of all
+of this stuff was was taking time and it
+wasn't working out no the way they
+thought it was uh it was going to be so
+is the US also going to
+to remove the
+um the demand that countries don't trade
+with China and is China going to to to
+take back their warnings
+uh two countries if they did agree to
+the US's demands to not trade with China
+this whole reciprocal warning thing that
+was going on so all of that is going to
+likely go away yes I think so because as
+I said it hasn't worked i mean Shinping
+has had a very successful trip in
+Southeast Asia he's visited various AAN
+countries he visited Vietnam Malaysia
+and um Cambodia and you know he seems to
+have been very well received there jd
+Vance has been in India i think that the
+Indians will have told JD Vance
+um look you know we we have our issues
+with China and they're very difficult
+and they're very important and we do
+want to have very good relations with
+you but it is simply not practical for
+India to cut off trade with China in the
+way that you say china is now India's
+biggest trading partner it is a vital
+investor in the Chinese economy in the
+Indian economy it is providing India
+with infrastructure investment which
+India absolutely needs if it is going to
+grow its economy further and it has
+expertise to do it i mean I've been in
+discussions with people about this india
+simply cannot afford this kind of
+economic cut off with China that some
+people in the United States might have
+thought so um I I think that we will see
+that you know these demands from the
+United States to stop dealing with China
+are going to gradually fade out they
+probably won't be
+publicly pulled back but the reality is
+the Americans will stop talking about
+them when they undertake these
+absolutely rightly as you rightly say
+very very complex trade
+negotiations um the Chinese won't
+publicly take back their warnings but
+their warnings won't be needed any
+further and as I said we'll be back
+finally to that position that arguably
+we should have been in in the first
+place where the United States pursues
+moves towards a
+protectionist trade policies which as I
+said you can disagree with but they have
+a long history they're nothing
+fundamentally new and they have their
+advocates and you know for all I know
+they might even work i'm not saying they
+will uh but you know it is a viable
+economic policy or at least an economic
+policy that has a strong intellectual
+underpinning so the United States can do
+that and China and the United States can
+pursue this economic divorce that we
+were talking about when Trump was
+president during his first term and
+which seemed to be progressing at that
+time until his presidency was completely
+derailed um um two years in after the
+Democrats gained control of the House
+and everything began to go completely
+wrong with Russia Gate and all of that
+so I I I think that you know if nothing
+else this has been a this has had a
+galvanizing effect but we're starting to
+see a return to a more stable um a more
+stable course than the one that we've
+seen over the last um few weeks and a
+more sustainable one uh off topic but
+maybe not off topic maybe not off topic
+I'll ask you um and probably uh a video
+that we're going to that we're
+definitely going to record at another
+time but um the tensions between India
+and Pakistan do you think they're
+connected in any way
+to to the uh the tariff war the the
+tariff conflict between the US and China
+do you think there are other forces at
+work here um just just a quick just for
+a quick analysis there and as I said was
+we'll get into depth on this topic in
+another video but we absolutely will it
+does it does seem that there there could
+be some some sort of connection there
+with everything that's going on in the
+world trying to to escalate to stir up
+escalation between um India and Pakistan
+and we had an interesting statement from
+the Pakistani defense minister who did
+say that this was some sort of he hinted
+at he hinted at the fact that this could
+have been a false flag and he did say
+that Pakistan has been doing the the
+dirty work of of the United States for
+decades something along those lines is
+what he said um interesting statement
+from the very interesting statement i
+have I have absolutely no doubt at all
+that this is what is his or connected to
+none at all but as you rightly say this
+is something we do need to talk about
+more in much more depth i I I should say
+that the next couple of days following
+this program will show the ex our making
+of this program this will show whether
+or not the situation between Pakistan
+and India which is incredibly dangerous
+by the way remember they're both nuclear
+powers whether it will escalate um the
+rhetoric from both sides is very strong
+and the actions that each side has been
+taking against the other so far has also
+been very strong it it clearly I have no
+doubt about this it would not have
+happened had we not had this enormous
+crisis between the United States on the
+one side and China on the other india is
+a kind of ally well it's it's it's got a
+strong partnership both with
+Pakistan and now with India it's
+historical connection has been closer to
+Pakistan's than it has been with India
+india historically was an ally or a
+friend of the Soviet Union but Pakistan
+also has a very close relationship
+indeed with China which is in some ways
+even more important for Pakistan than
+the one with the United States is so
+undoubtedly all of this is
+interconnected and it plays a
+significant role but I think we need to
+have a better idea of where all this
+crisis is going because flare-ups and
+tensions between India and Pakistan are
+very common this one looks like it could
+be worse than some of the others that we
+have
+seen but um I think a proper analysis of
+it needs as you correctly say a
+dedicated program and perhaps a better
+perspective where the timing of it the
+timing the timing is there's no I mean
+there is no coincidence here let me put
+it like that yeah okay we will end the
+video there the duran.locals.com we are
+on Rumble Odyssey Pitch Telegram
+Rockfitt and X go to the Duran shop pick
+up some merch like what we are wearing
+in this video update the link is in the
+description box down below use the code
+spring 15 to get 15% off take care
