@@ -1,5 +1,6 @@
 package bootiful.jdbc;
 
+import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,10 +17,14 @@ public class JdbcApplication {
 
 	@Bean
 	ApplicationRunner demo(CustomerRepository repository) {
-		return args -> {
-			var customer = repository.save(new Customer(null, "aa"));
-			repository.findAll().forEach(System.out::println);
-		};
+		ApplicationRunner aa = new ApplicationRunner() {
+            @Override
+            public void run(ApplicationArguments args) throws Exception {
+                var customer = repository.save(new Customer(null, "aa"));
+                repository.findAll().forEach(System.out::println);
+            }
+        };
+		return aa;
 	}
 }
 
