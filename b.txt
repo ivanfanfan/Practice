@@ -1,521 +1,148 @@
-hi spring fans welcome to another
-installment of spring tips you know I
-love Java and I love Java 21 in
-particular Java 21 and later are amazing
-Java 21 features a number of amazing
-things and I think the headline feature
-of course is virtual threats about which
-by the by we had a small video not too
-long ago go check that out but there's
-other things in the release and other
-releases that have come since of course
-that are very interesting one of my
-favorite things wasn't a single feature
-but a set of features that taken
-together support what Java language
-architect Brian GS has been talking
-about as data oriented programming
-Java has worked particularly well in the
-large sort of Monolithic code base uh in
-this example kind of a code base you
-have a lot of code a lot of classes you
-have modularity enforced by the compiler
-because of the strong privacy and and
-compiler controls and access controls
-that you get with the language it's well
-supported by the super fast Java
-compiler and so this kind of kind of
-arrangement for a codebase has worked
-particularly well us in these kinds of
-code bases the way you expressed a
-dimension of change was in terms of a
-new specialization of a type a new
-implementation of interface or a new
-specialization of an abstract uh type
-with an overridden method or two uh and
-this is how you express a new dimension
-of change to the system and this has
-worked well okay and no nobody's arguing
-that it has poorly served us obviously
-we've had 30 almost 30 years of really
-large code bases and and successful
-deployment with Java so no problem but
-increasingly the code bases what we read
-today are more of a of the nature of a
-service they're smaller they sit on the
-network responding to data or messages
-coming in and increasingly the vector by
-which we express change in the system is
-no longer the specialized abstract types
-but new messages new data that comes
-into the system to which we can respond
-so the language has to get better to
-adapt and serve this new sort of use
-case and I say new I'm using air quotes
-here but new as in from the last 10 15
-years right this this style of writing
-code has become very popular it's no
-longer the case that we're all in the
-same jbm and everything you need is
-there now we have data coming in off the
-wire often from uh the network from from
-rest from graphql from kofka from rabit
-mq from rsocket from grpc from whatever
-right so it's stringly typed data and
-increasingly the way we express changes
-in terms of these new messages right
-these stringly typed messages small
-concise actionless data that they're
-carriers for data not for Action right
-and so the language has to support these
-new kinds of workloads and these new
-styles of services and that's what these
-features do that we're going to look at
-today there's four features sealed types
-records pattern matching and Smart
-Switch expression that taken together
-support this incredible like new
-paradigm if you will kind of like
-object-oriented programming or
-functional programming this is data
-oriented programming if I had to sort of
-categorize it yeah I guess I'd say it's
-like a subset of functional programming
-with some extra niceties in there for
-for a good measure right it's a really
-useful subset of functional programming
-that lets us describe and work with data
-as a first class thing in the language
-so let's take an example let's go see
-how this works as always by going to my
-second favorite place on the internet
-start. spring. and by the way we're not
-necessarily using spring in this video
-this is a Java video but it's just nice
-to know that you can bootstrap a new
-project so again start. spring.
-Initializer
-all right here we are at the initializer
-again all we're going to do is make sure
-we've chosen Java 21 doesn't matter if
-you're using Maven or Gradle at this
-point and let's just call this data
-oriented programming okay hit generate
-and we'll open this up in our ID all
-right here's our public static void main
-now let's suppose we work in a highly
-regulated indust
-and in fact you know we don't even this
-is not even a spring application really
-we're just using spring to generate the
-code project but let's suppose we worked
-on a highly regulated industry oh I
-don't know Finance let's say okay and
-you've got a type called a loan okay
-these are these types usually attach to
-law there's usually legal consequences
-for mishandling these kinds of financial
-instruments and so you want to make sure
-that when you write the code that you
-handle as much as you can as
-consistently as you can right so let's
-say I have a loan and the first kind is
-a secured loan right implements loan and
-then we have unsecured loan which is a
-different kind of thing all together
-okay so we've got two different types
-now again remember what I said these
-things attached to law there's legal
-consequences for the mishandling there
-so you can imagine each one has a a
-validate method or something like that
-that you want to care for suffice it to
-say you also want to be very clear about
-who's handling the implementation and so
-on right so you want to make sure that
-we're all on the same page there so I've
-got two different types I want to limit
-it to that so one way I can do this is
-to make this a sealed type and what this
-does is it tells the language that this
-type will explicitly enumerate its uh
-implementations right so as to guarantee
-to the compiler and to yourself what
-implementations exist out there so here
-we're explicitly enumerating these two
-types but they are not yet final right
-if we made them final that would work
-right or we could seal them and then
-further permit to other types but you
-know within our explicit knowledge right
-so I could say class no op loan
-implements loan and and and actually we
-can extend unsecured loan right which
-which we don't want right so we' have to
-make this final like that and then
-permit this but again this is the
-problem right is that this type is
-further extended and there what's to
-stop somebody from coming in here and
-sort of doing a noop implementation of
-the validation and thus sidest stepping
-all the regulation attached to it
-whatever you do seal the hierarchy the
-easiest way to do that is to make
-everything final uh and call it good a
-record is a tupal other languages have
-tupal they are carriers for typed data
-so they're untyped carriers for typed
-data in a particular sequence so if you
-wanted to say carry an INT a string a
-Boolean and a date in a particular
-sequence you can use a tupal but Java is
-a nominal language everything in Java
-has a name and so our tupal here is
-called unsecured loan and it has this
-this data in it we describe the data
-here we can say that for example this
-unsecured loan has a an interest rate
-okay but you can put other things int X
-string y Etc you can just put those add
-as many of those things as you want
-these are called components these are
-the typed structured data in the untyped
-record type okay these components can be
-as varied as you want obviously you
-don't have to be just Java Lang types or
-Primitives or whatever and the contract
-here is pretty simple the unsecured loan
-the record has no derived state it can't
-store internal data and then and then
-return that right it can't compute and
-store data in it in itself all it can do
-is provide methods that derive the state
-but it doesn't have its own state so
-it's it's a pure type right like the
-data that you put into it is the only
-data that will ever exist in it right
-and so the the The Logical consequence
-to that is that the identity of the
-record of in this case the unsecured
-loan is basically the identity of the
-components right so if I put in a float
-and I want to then recreate the same
-unsecured loan I don't need to have
-behind the scenes behind the curtain
-sort of knowledge of how to create in an
-unsecured loan just create it and pass
-in this interest take this value from
-the old one pass it into the new one you
-have now a new object that is exactly
-the same semantically as the first one
-right there's no weird copy const
-structures or anything like that and and
-basically this is pretty nice because
-the compiler knows about this too the
-compiler knows that the identity of
-unsecured loan is equal to the identity
-of the components for that unsecured
-loan this has some interesting
-consequences basically it is able to
-destructure which is what they call it
-in other languages the unsecured loan in
-terms of the components of the insecured
-loan there's some other benefits here to
-though for example let's say I wanted to
-serialize this unsecured loan I could
-send that unsecured loan over the
-network send the object header and do
-all that kind of stuff or I could just
-send the float right and the language
-knows that and so that's what it does
-it's a special case in serialization
-starting to you know towards a a more
-realistic and more San ization protocol
-if you serialize this into secure loan
-the language will only serialize this
-float and send up send a little
-information about the the name of the
-class to put on the other end of it it's
-it's very very efficient it doesn't re
-it doesn't serialize the whole object it
-doesn't need to it just knows the
-individual components are the the part
-of the object that's interesting okay so
-it's able to destructure and it knows
-about how to compose and decompose or
-you know our our object it knows how to
-put them back together given the
-individual parts we have two
-implementations of our loan secured loan
-and unsecured loan and we looked at
-records right and records are really
-nice because they they are structurally
-more obvious to the language one thing
-that I mention here is that we can
-destructure records we can't yet do that
-with classes there's no way to do that
-with a regular class the language
-doesn't know given a an arbitrary class
-What fields it needs to preserve to
-preserve the state of that class I get
-the feeling that this will arrive
-eventually right it's sort of like a
-it's you know if this is The Constructor
-right then then the thing that allows it
-to derealize itself would be the
-destructor right and I don't know I get
-the feeling they're going to work on
-that or that that will arrive but I
-don't know when who knows but I've I've
-heard them talk about that being a
-possibility another thing you might
-notice is that these records have when
-you when you when you create these
-records these records have accessor
-methods that is to say there will there
-Accessor Methods
-there will be a method called interest
-so USL new unsecured loan and
-2.0 okay now I can say USL doin so it
-has an accessory method and it has a
-valid two string and a valid equals and
-a valid hash code all based on the
-identity of 2.2 F right so it gets all
-that for free so the language does you a
-lot of favors if you can agree this
-contract the the contract that there is
-no derived State and that the record is
-a carrier essentially for the component
-data that you pass in if you agree that
-contract it'll do a lot of cool things
-for you to give you a accessor methods
-two string equals hash code Etc so this
-is you know I think this is really
-really nice just a really nice result
-but the problem you you can imagine is
-what if you want to change something
-right like I I have this unsecured loan
-here and I choose 22f what if I want to
-change it I say well I have to create a
-new one right VAR new USL new unsecured
-loan and you know it's not so bad here
-because I just have one field so I can
-just copy the old data over but imagine
-I had like 10 fields you know that would
-be very very tedious especially if I
-just want to mutate one field so one
-thing that I'm hoping that they'll work
-on and again I've heard sort of an
-between you and me and the wall my
-understanding is that there's an
-appetite for it but I haven't seen it
-yet uh is something like with
-interest you know so in this case you
-would have a another built-in method
-that would allow you to take one field
-modify and then return a clone of the of
-the object with that new field changed
-and these are called Withers okay but
-again that's not here at the moment
-right but one one imagines that's got to
-be somewhere in the future right okay so
-I like records but let's say I wanted to
-create a method to display a
-message
-for that loan okay so imagine we're
-building the UI okay and we want to
-display a message for the user given
-alone well I could you know let's say I
-could do a variable I can say if loan
-instance of unsecured loan and then I
-could say bar USF unsecured loan I could
-I could say VAR
-USL equals unsecured loan loan okay and
-then I could say uh ouch that interest
-rate is going to hurt right very sort of
-blatantly user hostile message but okay
-and then what about if it's a regular
-loan if loan instance of secure loan bar
-SL there's nothing really for me to look
-at in this particular case but you know
-you imagine okay so good job nice loan
-right so more friendly and then return
-the message like that okay so we've got
-now this this method which it works but
-it's very ugly first of all I'm I'm
-doing double work here right I'm
-matching a pattern but I'm not
-extracting any value of that match
-outside of this block which I'm allowed
-to be in but I'm not really it's doing
-the work of of proving that I can cast
-down to an unsecured loan why not let me
-benefit from that right and so you can
-now with pattern matching so this is the
-pattern this is the extraction okay I'm
-extracting out the results of that
-pattern into this variable that within
-the context of this block is
-definitively castable so if I look at
-this USL variable it is the unsecured
-loan type it's not just loan okay and
-you know it goes even a step further
-because remember unsecured loan is a
-record and the language knows what to do
-with those types so I can actually go a
-step further and extract out just the
-constituent component right the interest
-and notice that I didn't need to
-respecify the the type I could just say
-interest right so VAR interest and it's
-a float right and then within the
-context of this method this Branch it is
-a float that I want to do reference and
-use okay okay so very nice so I'm doing
-pattern matching and that's still pretty
-good but nothing it's still not quite
-there what happens if I get rid of this
-nothing nothing nothing happens right
-that's exactly the pro point is that we
-are nothing is happening right we're not
-getting the benefit of our of our work
-here right and we're also not
-guaranteeing we're we're not
-guaranteeing that both cases are handled
-because again this is a financial
-instrument highly regulated it's very
-important that you capture all cases and
-you handle and care for all particular
-cases because otherwise there might you
-might fail to handle some validation or
-some sort of check right so we want the
-compiler to make sure that we're on top
-of both cases and it can remember our
-loan is a is a sealed type the compiler
-knows exactly how many permutations of a
-loan there are in the system it can help
-us enforce that it knows how to say
-whether we've exhausted all the possible
-checks just like it can with a an enum
-right an enumeration of a particular set
-of States so let's take advantage of
-that by using a Smart Switch expression
-now this is not just a regular switch I
-can't even use a regular switch
-statement here I need to use a Smart
-Switch expression so what I'm going to
-do is I'm going to use a Smart Switch
-expression which looks like this first
-of all notice that I'm assigning the
-result of the expression to a variable
-that's right the expression produces
-Tada an expression then I'll do some
-pattern matching in here I'll match
-secured loan okay copy and paste that
-and then what about the unsecured Lo
-okay USL and then same magic right I can
-do this right here there we go and take
-that over there as well so there's the
-the the much cleaner code notice that
-this is yellow it's telling me I can
-just inline that that's true no need for
-the intermediate variable if it does
-nothing so now this is you know it's
-I've put new lines there I'm not even
-sure if needed that really there you go
-that's fine still technically fits
-within my very small width monitor here
-right it's a little bit more than 80 but
-whatever okay there fine no leave it
-back there anyway so we've got this
-we've got this handling here what
-happens if I comment out one of the
-branches the compiler barks it's saying
-the switch expression doesn't cover all
-possible input values that's true right
-it knows that we have failed to handle
-one of the two cases it knows that we
-haven't exhausted all the permutation
-of that type loan okay so this is
-actually more typ safe it's more elegant
-it's you know it's it's more clear
-what's happening or enumerating over
-this and the compiler is watching out
-for it so it's actually it's actually a
-better result we get better validation
-the same results are better much less
-code and and it all just feels like it
-should be there so these features right
-Summary
-data oriented programming we looked at
-sealed types we looked at records we
-looked at the Smart Switch expr
-expression and we looked at pattern
-matching and these things taken together
-can make your language and make the
-experience really nice so now imagine
-instead of alone you've got data coming
-in over the network right you know it's
-nice and easy to describe responses you
-get back from rest or graphql or or gra
-you know drpc or whatever in terms of
-these types very very elegant very very
-concise syntax the result here I think
-is just all around better and I really
-like it so when you're working with your
-next web service in spring or something
-working with Kafka or you know grpc or
-graph kill or racet or or whatever you
-know consider these techniques right
-this will make your spring integration
-code easier it makes working with events
-in Spring modulith easier it makes
-working with events in Spring framework
-and in Spring integration easier it
-makes working with messages in the Kafka
-support and the mqp support and jmss
-support and whatever easier this is just
-a very nice addition to language that
-makes our processing code cleaner and
-nicer and and suddenly even things like
-ye old application listener right if you
-implement application listener you know
-the old pattern used to be that it it
-would before generics application L
-listener took a parameter of type object
-now you can Implement application
-listener and give it a parameterized
-bound and you could give it a sealed
-type as your bound and then in the same
-method without having to have
-duplicative methods and all that and
-duplicate duplicative listeners you can
-just switch on the types if it's sealed
-and and and handle both of them very
-nicely here in addition this kind of
-support this is the kind of support that
-makes typed messages in you know actor
-Frameworks like AA so convenient if
-you're using cqs Frameworks like axon
-you're also going to care about the
-ability to easily switch on uh different
-types here remember a switch expression
-if you look at the bite code is actually
-faster it's it's much faster sometimes
-because it's constant time than for
-example a polymorphic if else right
-because the if house is potentially
-unbounded and it has to do a vtable sort
-of crawl right here a switch works
-because it's jumps right it's an OP code
-that lets you go to a particular offset
-based on each value so this is actually
-faster code in most of the cases as well
-as more efficient and more elegant it's
-just a good result it's a very very good
-result so I hope you'll uh take a look
-at these amazing features and see if you
-can use them in your next application
-thanks everybody as always for watching
-and I'll see you next week
+General Recommendations for G1
+The general recommendation is to use G1 with its default settings, eventually giving it a different pause-time goal and setting a maximum Java heap size by using -Xmx if desired.
+
+G1 defaults have been balanced differently than either of the other collectors. G1's goals in the default configuration are neither maximum throughput nor lowest latency, but to provide relatively small, uniform pauses at high throughput. However, G1's mechanisms to incrementally reclaim space in the heap and the pause-time control incur some overhead in both the application threads and in the space-reclamation efficiency.
+
+If you prefer high throughput, then relax the pause-time goal by using -XX:MaxGCPauseMillis or provide a larger heap. If latency is the main requirement, then modify the pause-time target. Avoid limiting the young generation size to particular values by using options like -Xmn, -XX:NewRatio and others because the young generation size is the main means for G1 to allow it to meet the pause-time. Setting the young generation size to a single value overrides and practically disables pause-time control.
+
+Moving to G1 from Other Collectors
+Generally, when moving to G1 from other collectors, particularly the Concurrent Mark Sweep collector, start by removing all options that affect garbage collection, and only set the pause-time goal and overall heap size by using -Xmx and optionally -Xms.
+
+Many options that are useful for other collectors to respond in some particular way, have either no effect at all, or even decrease throughput and the likelihood to meet the pause-time target. An example could be setting young generation sizes that completely prevent G1 from adjusting the young generation size to meet pause-time goals.
+
+Improving G1 Performance
+G1 is designed to provide good overall performance without the need to specify additional options. However, there are cases when the default heuristics or default configurations for them provide suboptimal results. This section gives some guidelines about diagnosing and improving in these cases. This guide describes only the possibilities that G1 provides to improve garbage collector performance in a selected metric, when given a set application. On a case-by-case basis, application-level optimizations could be more effective than trying to tune the VM to perform better, for example, by avoiding some problematic situations by less long-lived objects altogether.
+
+For diagnosis purposes, G1 provides comprehensive logging. A good start is to use the -Xlog:gc*=debug option and then refine the output from that if necessary. The log provides a detailed overview during and outside the pauses about garbage collection activity. This includes the type of collection and a breakdown of time spent in particular phases of the pause.
+
+The following subsections explore some common performance issues.
+
+Observing Full Garbage Collections
+A full heap garbage collection (Full GC) is often very time consuming. Full GCs caused by too high heap occupancy in the old generation can be detected by finding the words Pause Full (G1 Compaction Pause) in the log. Full GCs are typically preceded by garbage collections that encounter an evacuation failure indicated by (Evacuation Failure) tags.
+
+The reason that a Full GC occurs is because the application allocates too many objects that can't be reclaimed quickly enough. Often concurrent marking has not been able to complete in time to start a space-reclamation phase. The probability to run into a Full GC can be compounded by the allocation of many humongous objects. Due to the way these objects are allocated in G1, they may take up much more memory than expected.
+
+The goal should be to ensure that concurrent marking completes on time. This can be achieved either by decreasing the allocation rate in the old generation, or giving the concurrent marking more time to complete.
+
+G1 gives you several options to handle this situation better:
+
+You can determine the number of regions occupied by humongous objects on the Java heap using the gc+heap=info logging. Y in the lines "Humongous regions: X->Y” give you the amount of regions occupied by humongous objects. If this number is high compared to the number of old regions, the best option is to try to decrease this number of objects. You can achieve this by increasing the region size using the  -XX:G1HeapRegionSize option. The currently selected heap region size is printed at the beginning of the log.
+Increase the size of the Java heap. This typically increases the amount of time marking has to complete.
+Increase the number of concurrent marking threads by setting -XX:ConcGCThreads explicitly.
+Force G1 to start marking earlier. G1 automatically determines the Initiating Heap Occupancy Percent (IHOP) threshold based on earlier application behavior. If the application behavior changes, these predictions might be wrong. There are two options: Lower the target occupancy for when to start space-reclamation by increasing the buffer used in an adaptive IHOP calculation by modifying -XX:G1ReservePercent; or, disable the adaptive calculation of the IHOP by setting it manually using -XX:-G1UseAdaptiveIHOP and -XX:InitiatingHeapOccupancyPercent.
+Other causes than Allocation Failure for a Full GC typically indicate that either the application or some external tool causes a full heap collection. If the cause is System.gc(), and there is no way to modify the application sources, the effect of Full GCs can be mitigated by using -XX:+ExplicitGCInvokesConcurrent or let the VM completely ignore them by setting -XX:+DisableExplicitGC. External tools may still force Full GCs; they can be removed only by not requesting them.
+
+Humongous Object Fragmentation
+A Full GC could occur before all Java heap memory has been exhausted due to the necessity of finding a contiguous set of regions for them. Potential options in this case are increasing the heap region size by using the option -XX:G1HeapRegionSize to decrease the number of humongous objects, or increasing size of the heap. In extreme cases, there might not be enough contiguous space available for G1 to allocate the object even if available memory indicates otherwise. This would lead to a VM exit if that Full GC can not reclaim enough contiguous space. As a result, there are no other options than either decreasing the amount of humongous object allocations as mentioned previously, or increasing the heap.
+
+Tuning for Latency
+This section discusses hints to improve G1 behavior in case of common latency problems that is, if the pause-time is too high.
+
+Unusual System or Real-Time Usage
+For every garbage collection pause, the gc+cpu=info log output contains a line including information from the operating system with a breakdown about where during the pause-time has been spent. An example for such output is User=0.19s Sys=0.00s Real=0.01s.
+
+User time is time spent in VM code, system time is the time spent in the operating system, and real time is the amount of absolute time passed during the pause. If the system time is relatively high, then most often the environment is the cause.
+
+Common known issues for high system time are:
+
+The VM allocating or giving back memory from the operating system memory may cause unnecessary delays. Avoid the delays by setting minimum and maximum heap sizes to the same value using the options -Xms and -Xmx, and pre-touching all memory using -XX:+AlwaysPreTouch to move this work to the VM startup phase.
+Particularly in Linux, coalescing of small pages into huge pages by the Transparent Huge Pages (THP) feature tends to stall random processes, not just during a pause. Because the VM allocates and maintains a lot of memory, there is a higher than usual risk that the VM will be the process that stalls for a long time. Refer to the documentation of your operating system on how to disable the Transparent Huge Pages feature.
+Writing the log output may stall for some time because of some background task intermittently taking up all I/O bandwidth for the hard disk the log is written to. Consider using a separate disk for your logs or some other storage, for example memory-backed file system to avoid this.
+Another situation to look out for is real time being a lot larger than the sum of the others this may indicate that the VM did not get enough CPU time on a possibly overloaded machine.
+
+Reference Object Processing Takes Too Long
+Information about the time taken for processing of Reference Objects is shown in the Reference Processing phase. During the Reference Processing phase, G1 updates the referents of Reference Objects according to the requirements of the particular type of Reference Object. By default, G1 tries to parallelize the sub-phases of Reference Processing using the following heuristic: for every -XX:ReferencesPerThread reference Objects start a single thread, bounded by the value in -XX:ParallelGCThreads. This heuristic can be disabled by setting -XX:ReferencesPerThread to 0 to use all available threads by default, or parallelization disabled completely by -XX:-ParallelRefProcEnabled.
+
+Young-Only Collections Within the Young-Only Phase Take Too Long
+Normal young and, in general any young collection roughly takes time proportional to the size of the young generation, or more specifically, the number of live objects within the collection set that needs to be copied. If the Evacuate Collection Set phase takes too long, in particular, the Object Copy sub-phase, decrease -XX:G1NewSizePercent. This decreases the minimum size of the young generation, allowing for potentially shorter pauses.
+
+Another problem with sizing of the young generation may occur if application performance, and in particular the amount of objects surviving a collection, suddenly changes. This may cause spikes in garbage collection pause time. It might be useful to decrease the maximum young generation size by using -XX:G1MaxNewSizePercent. This limits the maximum size of the young generation and so the number of objects that need to be processed during the pause.
+
+Mixed Collections Take Too Long
+Mixed young collections are used to reclaim space in the old generation. The collection set of mixed collections contains young and old generation regions. You can obtain information about how much time evacuation of either young or old generation regions contribute to the pause-time by enabling the gc+ergo+cset=debug log output. Look for the following log message:
+
+Added young regions to CSet. [...] predicted eden time: 4.86ms, predicted base time: 9.98ms, target pause time: 200.00ms, [...]
+
+Eden time and base time together give the predicted young region time, that is the time G1 expects evacuating the young generation will take
+
+The log message for predicting old region time looks as follows:
+
+Finish choosing collection set old regions. [...] predicted initial time: 147.70ms, predicted optional time: 15.45ms, [...]
+
+Here, predicted initial time represents predicted old region time, i.e. the time G1 expects evacuating the minimum set of old generation regions will take.
+
+If the predicted young region time is too long, then see Young-Only Collections Within the Young-Only Phase Take Too Long for options. Otherwise, to reduce the contribution of the old generation regions to the pause-time, G1 provides three options:
+
+Spread the old generation region reclamation across more garbage collections by increasing -XX:G1MixedGCCountTarget.
+
+Avoid collecting regions that take a proportionally large amount of time to collect by not putting them into the candidate collection set by using -XX:G1MixedGCLiveThresholdPercent. In many cases, highly occupied regions take a lot of time to collect.
+
+Stop old generation space reclamation earlier so that G1 won't collect as many highly occupied regions. In this case, increase -XX:G1HeapWastePercent.
+
+Note that the last two options decrease the amount of collection set candidate regions where space can be reclaimed for the current space-reclamation phase. This may mean that G1 may not be able to reclaim enough space in the old generation for sustained operation. However, later space-reclamation phases may be able to garbage collect them.
+
+Collections Occur Back to Back
+G1 default MMU settings allow back-to-back garbage collections. The default value of -XX:GCPauseIntervalMillis is just slightly higher than -XX:MaxGCPauseMillis. In case you observe continuous back-to-back garbage collections, which results in the application not progressing, increase the value of -XX:GCPauseIntervalMillis to an acceptable value. G1 will then try to space out garbage collections more.
+
+High Merge Heap Roots and Scan Heap Roots Times
+One way to reduce these phases is to decrease the number of remembered set entries in the combined remembered sets. Adjusting the size of the heap regions by using the option -XX:G1HeapRegionSize decreases the number of cross-region references size of the remembered set. Larger regions tend to have fewer cross-region references, so the relative amount of work spent in processing them decreases, although at the same time, larger regions may mean more live objects to evacuate per region, increasing the time for other phases.
+
+If a significant amount of time of the garbage collection, i.e. more than 60%, is spent in these two phases, one option could be decreasing the granularity of the remembered set entries by decreasing the value of the -XX:GCCardSizeInBytes option: finer granularity decreases the amount of work to find references, at the cost of some additional memory.
+
+Spurious high Scan Heap Roots times in combination with the application allocating large objects may be caused by an optimization that tries to reduce concurrent remembered set updates work by batching them. If the application that created such a batch happens just before a garbage collection, this might have a negative impact on Merge Heap Roots time. Use -XX:-ReduceInitialCardMarks to disable this optimization and potentially avoid this situation.
+
+Tuning for Throughput
+G1's default policy tries to maintain a balance between throughput and latency; however, there are situations where higher throughput is desirable. Apart from decreasing the overall pause-times as described in the previous sections, the frequency of the pauses could be decreased. The main idea is to increase the maximum pause time by using -XX:MaxGCPauseMillis. The generation sizing heuristics will automatically adapt the size of the young generation, which directly determines the frequency of pauses. If that does not result in expected behavior, particularly during the space-reclamation phase, increasing the minimum young generation size using -XX:G1NewSizePercent will force G1 to do that.
+
+In some cases, -XX:G1MaxNewSizePercent, the maximum allowed young generation size, may limit throughput by limiting young generation size. This can be diagnosed by looking at region summary output of gc+heap=info logging. In this case the combined percentage of Eden regions and Survivor regions is close to -XX:G1MaxNewSizePercent percent of the total number of regions. Consider increasing-XX:G1MaxNewSizePercent in this case.
+
+Another option to increase throughput is to decrease the amount of concurrent work. In particular, concurrent remembered set updates often require a lot of CPU resources. The option -XX:G1RSetUpdatingPauseTimePercent can be used to move work from concurrent operation into the garbage collection pause.
+
+Increasing this value potentially decreases the refinement work scheduled concurrently to the application, conversely decreasing this value potentially increases the amount of refinement work performed concurrently to the application.
+
+The refinement work in the garbage collection pause is tracked in the Log Buffers part of the Merge Heap Roots phase when enabling gc+phases=debug logging.
+
+Enabling the use of large pages by using -XX:+UseLargePages may also improve throughput. Refer to your operating system documentation on how to set up large pages.
+
+You can minimize heap resizing work by disabling it; set the options -Xms and -Xmx to the same value. In addition, you can use -XX:+AlwaysPreTouch to move the operating system work to back virtual memory with physical memory to VM startup time. Both of these measures can be particularly desirable in order to make pause-times more consistent.
+
+Tuning for Heap Size
+Like other collectors, G1 aims to size the heap so that the time spent in garbage collection is below the ratio determined by the -XX:GCTimeRatio option. Adjust this option to make G1 meet your requirements.
+
+Tunable Defaults
+This section describes the default values and some additional information about command-line options that are introduced in this topic.
+
+Table 8-1 Tunable Defaults G1 GC
+
+Option and Default Value	Description
+-XX:+ReduceInitialCardMarks
+
+This batches together concurrent remembered set update (refinement) work for initial object allocations.
+
+-XX:+ParallelRefProcEnabled
+
+-XX:ReferencesPerThread=1000
+
+-XX:ReferencesPerThread determines the degree of parallelization: for every N Reference Objects one thread will participate in the sub-phases of Reference Processing, limited by -XX:ParallelGCThreads. A value of 0 indicates that the maximum number of threads as indicated by the value of -XX:ParallelGCThreads will always be used.
+
+This determines whether processing of java.lang.Ref.* instances should be done in parallel by multiple threads.
+
+-XX:G1RSetUpdatingPauseTimePercent=10
+
+The concurrent remembered set update (refinement) work can be controlled with this option. Refinement tries to schedule work concurrently so that at most -XX:G1RSetUpdatingPauseTimePercent percent of the maximum pause time goal is spent in the garbage collection pause in the Update RS phase, processing remaining work.
+
+-XX:G1SummarizeRSetStatsPeriod=0
+
+This is the period in a number of GCs that G1 generates remembered set summary reports. Set this to zero to disable. Generating remembered set summary reports is a costly operation, so it should be used only if necessary, and with a reasonably high value. Use gc+remset=trace to print anything.
+
+-XX:GCTimeRatio=12
+
+This is the divisor for the target ratio of time that should be spent in garbage collection as opposed to the application. The actual formula for determining the target fraction of time that can be spent in garbage collection before increasing the heap is 1 / (1 + GCTimeRatio). This default value results in a target with about 8% of the time to be spent in garbage collection.
+
+-XX:G1PeriodicGCInterval=0
+The interval in ms to check whether G1 should trigger a periodic garbage collection. Set to zero to disable.
+
+-XX:+G1PeriodicGCInvokesConcurrent
+If set, periodic garbage collections trigger a concurrent marking or continue the existing collection cycle, otherwise trigger a Full GC.
+
+-XX:G1PeriodicGCSystemLoadThreshold=0.0	Threshold for the current system load as returned by the hosts getloadavg() call to determine whether a periodic garbage collection should be triggered. A current system load higher than this value prevents periodic garbage collections. A value of zero indicates that this threshold check is disabled.
